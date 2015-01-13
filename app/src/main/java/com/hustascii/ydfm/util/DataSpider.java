@@ -7,7 +7,8 @@ import com.hustascii.ydfm.beans.Item;
 import org.apache.http.util.ByteArrayBuffer;
 import org.apache.http.util.EncodingUtils;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+import org.jsoup.nodes.*;
+import org.jsoup.select.Elements;
 
 import java.io.BufferedInputStream;
 import java.io.InputStream;
@@ -30,7 +31,23 @@ public class DataSpider {
     public ArrayList<Item> getData(){
         Document document = Jsoup.parse(getHtmlString(this.url));
 
-        return null;
+        Elements authors=document.select("div.channel-meta").select("span:has(i.fa-pencil)");
+        Elements speakers=document.select("div.channel-meta").select("span:has(i.fa-microphone)");
+        Elements times=document.select("div.channel-meta").select("span:has(i.fa-clock-o)");
+        Elements clicks=document.select("div.channel-meta").select("span:has(.fa-headphones)");
+        Elements titles=document.select("div.channel-title").select("a");
+        Elements urls=document.select("div.channel-title").select("a");
+        Elements imgs=document.select("div.channel-pic").select("img");
+
+        ArrayList<Item> list=new ArrayList<Item>();
+        for(int i=0;i<authors.size();i++){
+            Item item=new Item(authors.get(i).text(),speakers.get(i).text(),times.get(i).text(),clicks.get(i).text());
+            item.setImgUrl(imgs.get(i).attr("abs:src"));
+            item.setTitle(titles.get(i).text());
+            item.setContentUrl(urls.get(i).attr("abs:href"));
+            list.add(item);
+        }
+        return list;
     }
 
     public String getHtmlString(String urlString) {
