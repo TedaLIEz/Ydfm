@@ -81,7 +81,7 @@ public class HomeAdapter extends BaseAdapter {
         }else{
             holder = (ViewHolder) view.getTag();
         }
-        String img = "http://pic002.cnblogs.com/images/2012/359646/2012040121150271.png";
+        String img = "http://yuedu.fm/static/file/large/bb962816793704ba4cdb9516ce4a829f";
         final Item item = mList.get(i) ;
         if(!mBusy){
             mImageLoader.displayImage(img, holder.mImg, options);
