@@ -4,6 +4,7 @@ package com.hustascii.ydfm.beans;
  * Created by wei on 15-1-13.
  */
 public class Item {
+    private String id;
     private String title;
     private String author;
     private String speaker;
@@ -73,5 +74,16 @@ public class Item {
         this.speaker = speaker;
         this.time = time;
         this.listen = listen;
+    }
+
+    public Item(String id,String title, String author, String speaker, String time, String listen, String imgUrl, String contentUrl) {
+        this.id = id;
+        this.title = title;
+        this.author = author;
+        this.speaker = speaker;
+        this.time = time;
+        this.listen = listen;
+        this.imgUrl = imgUrl;
+        this.contentUrl = contentUrl;
     }
 }
