@@ -3,6 +3,9 @@ package com.hustascii.ydfm;
 import android.content.Intent;
 import android.graphics.Color;
 import android.provider.ContactsContract;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,8 +13,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.hustascii.ydfm.fragment.BaseFragment;
 import com.hustascii.ydfm.fragment.HomeFragment;
 import com.hustascii.ydfm.util.FontHelper;
+import com.hustascii.ydfm.util.Globles;
 
 import it.neokree.materialnavigationdrawer.MaterialAccount;
 import it.neokree.materialnavigationdrawer.MaterialAccountListener;
@@ -20,68 +25,44 @@ import it.neokree.materialnavigationdrawer.MaterialSection;
 import it.neokree.materialnavigationdrawer.MaterialSectionListener;
 
 
-public class MainActivity extends MaterialNavigationDrawer implements MaterialAccountListener {
-    MaterialSection section1, section2, recorder, night, last, settingsSection;
+public class MainActivity extends MaterialNavigationDrawer {
+    MaterialSection section1, section2,section3,section4,section5,section6, collectSection,settingsSection;
+    FragmentManager fragmentManager = getSupportFragmentManager();
+    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
     @Override
     public void init(Bundle savedInstanceState) {
 
 
 
-        // add first account
-        MaterialAccount account = new MaterialAccount("魏鸿鑫","weihongxin@hustascii.com",this.getResources().getDrawable(R.drawable.photo),this.getResources().getDrawable(R.drawable.bamboo));
-        this.addAccount(account);
-
-        // set listener
-        this.setAccountListener(this);
+        this.setDrawerHeaderImage(this.getResources().getDrawable(R.drawable.bamboo));
 
         // create sections
-        section1 = this.newSection("首页",new HomeFragment());
-        section2 = this.newSection("收藏",new MaterialSectionListener() {
-            @Override
-            public void onClick(MaterialSection section) {
-                Toast.makeText(MainActivity.this, "收藏", Toast.LENGTH_SHORT).show();
-
-                // deselect section when is clicked
-                section.unSelect();
-            }
-        });
-        // recorder section with icon and 10 notifications
-        recorder = this.newSection("蓝绿色",this.getResources().getDrawable(R.drawable.ic_mic_white_24dp),new HomeFragment()).setNotifications(10);
-        // night section with icon, section color and notifications
-        night = this.newSection("天蓝色", this.getResources().getDrawable(R.drawable.ic_hotel_grey600_24dp), new HomeFragment())
-                .setSectionColor(Color.parseColor("#2196f3"),Color.parseColor("#1565c0")).setNotifications(150);
-        // night section with section color
-//        last = this.newSection("帮我赚钱", new FragmentButton()).setSectionColor(Color.parseColor("#ff9800"), Color.parseColor("#ef6c00"));
-
-        Intent i = new Intent(this,ContactsContract.Profile.class);
-        settingsSection = this.newSection("设置",this.getResources().getDrawable(R.drawable.ic_settings_black_24dp),i);
-
+        section1 = this.newSection("悦读",getFragmentInstance(Globles.BASE_URL + "channel/1/"));
+        section2 = this.newSection("情感",getFragmentInstance(Globles.BASE_URL + "channel/2/"));
+        section3 = this.newSection("连播",getFragmentInstance(Globles.BASE_URL + "channel/3/"));
+        section4 = this.newSection("校园",getFragmentInstance(Globles.BASE_URL + "channel/4/"));
+        section5 = this.newSection("音乐",getFragmentInstance(Globles.BASE_URL + "channel/5/"));
+        section6 = this.newSection("Labs",getFragmentInstance(Globles.BASE_URL + "channel/6/"));
+        this.addDivisor();
+        collectSection= this.newSection("收藏",getFragmentInstance(Globles.BASE_URL + "channel/6/"));
+        settingsSection = this.newSection("设置",getFragmentInstance(Globles.BASE_URL + "channel/6/"));
         // add your sections to the drawer
         this.addSection(section1);
         this.addSection(section2);
-        this.addSubheader("其它");
-        this.addSection(recorder);
-        this.addSection(night);
+        this.addSection(section3);
+        this.addSection(section4);
+        this.addSection(section5);
+        this.addSection(section6);
         this.addDivisor();
+        this.addSection(collectSection);
+        this.addSection(settingsSection);
+
 //        this.addSection(last);
-        this.addBottomSection(settingsSection);
 
         this.setBackPattern(MaterialNavigationDrawer.BACKPATTERN_BACK_TO_FIRST);
     }
 
-
-    @Override
-    public void onAccountOpening(MaterialAccount account) {
-        // open profile activity
-        Intent i = new Intent(this,ContactsContract.Profile.class);
-        startActivity(i);
-    }
-
-    @Override
-    public void onChangeAccount(MaterialAccount newAccount) {
-
-    }
 
 
 
@@ -102,5 +83,24 @@ public class MainActivity extends MaterialNavigationDrawer implements MaterialAc
         //noinspection SimplifiableIfStatement
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        new BaseFragment();
+    }
+
+
+    private BaseFragment getFragmentInstance(String url){
+        if(fragmentManager.findFragmentByTag(url)==null){
+            BaseFragment fragment = new BaseFragment();
+            fragment.setUrl(url);
+            fragmentTransaction.add(fragment,url);
+            return fragment;
+        }else{
+            return (BaseFragment)fragmentManager.findFragmentByTag(url);
+        }
+
     }
 }

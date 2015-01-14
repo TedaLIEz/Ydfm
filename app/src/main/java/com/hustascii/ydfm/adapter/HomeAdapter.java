@@ -2,6 +2,7 @@ package com.hustascii.ydfm.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 
 import com.hustascii.ydfm.R;
 import com.hustascii.ydfm.beans.Item;
+import com.hustascii.ydfm.util.Globles;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.FailReason;
@@ -40,6 +42,7 @@ public class HomeAdapter extends BaseAdapter {
     }
     public HomeAdapter(Context context,ArrayList<Item> list){
         this.mInflater = LayoutInflater.from(context);
+//        this.mList = list;
         this.mList = list;
         this.mContext = context;
         this.mImageLoader = ImageLoader.getInstance();
@@ -72,6 +75,8 @@ public class HomeAdapter extends BaseAdapter {
         if (view == null) {
             view = mInflater.inflate(R.layout.item_info, null);
             holder = new ViewHolder();
+            holder.mTitle = (TextView)view.findViewById(R.id.title);
+
             holder.mImg = (ImageView)view.findViewById(R.id.list_img);
             holder.mAuthor = (TextView)view.findViewById(R.id.author);
             holder.mSpeaker = (TextView)view.findViewById(R.id.speaker);
@@ -81,19 +86,20 @@ public class HomeAdapter extends BaseAdapter {
         }else{
             holder = (ViewHolder) view.getTag();
         }
-        String img = "http://yuedu.fm/static/file/large/bb962816793704ba4cdb9516ce4a829f";
         final Item item = mList.get(i) ;
         if(!mBusy){
-            mImageLoader.displayImage(img, holder.mImg, options);
+            Log.v("item.url", item.getImgUrl());
+            mImageLoader.displayImage(Globles.BASE_URL+item.getImgUrl().substring(1), holder.mImg, options);
         }else{
-            mImageLoader.displayImage(img, holder.mImg, options);
+            mImageLoader.displayImage(item.getImgUrl(), holder.mImg, options);
 
         }
-
+        holder.mTitle.setText(item.getTitle());
         holder.mAuthor.setText(item.getAuthor());
         holder.mSpeaker.setText(item.getSpeaker());
         holder.mListen.setText(item.getListen());
         holder.mTimer.setText(item.getTime());
+
         return view;
     }
 
@@ -109,6 +115,7 @@ public class HomeAdapter extends BaseAdapter {
 
 
     public final class ViewHolder{
+        public TextView mTitle;
         public ImageView mImg;
         public TextView mAuthor;
         public TextView mSpeaker;

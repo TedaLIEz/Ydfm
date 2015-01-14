@@ -20,9 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 
-public class HomeFragment extends BaseFragment {
-    public HomeFragment(){
-    }
+public class HomeFragment extends Fragment {
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,13 +29,13 @@ public class HomeFragment extends BaseFragment {
 
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        super.onCreateView(inflater, container,savedInstanceState);
-        return super.setView(inflater, super.getData(Globles.BASE_URL+"channel/1/"));
-    }
+//    @Override
+//    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+//                             Bundle savedInstanceState) {
+//        // Inflate the layout for this fragment
+//        super.onCreateView(inflater, container,savedInstanceState);
+//        return super.setView(inflater, super.getData(Globles.BASE_URL+"channel/1/"));
+//    }
 
 
 }

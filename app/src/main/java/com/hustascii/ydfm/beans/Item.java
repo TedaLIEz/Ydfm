@@ -86,4 +86,14 @@ public class Item {
         this.imgUrl = imgUrl;
         this.contentUrl = contentUrl;
     }
+
+    public Item(String title, String author, String speaker, String time, String listen, String imgUrl, String contentUrl) {
+        this.title = title;
+        this.author = author;
+        this.speaker = speaker;
+        this.time = time;
+        this.listen = listen;
+        this.imgUrl = imgUrl;
+        this.contentUrl = contentUrl;
+    }
 }

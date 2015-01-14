@@ -5,7 +5,10 @@
     android:padding="10dp"
     android:background="#F3F3F3"
     tools:context=".MainActivity">
-
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_refresh"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <ListView
         android:id="@+id/infolist"
         android:dividerHeight="10dp"
@@ -13,4 +16,5 @@
         android:alwaysDrawnWithCache="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></ListView>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>
