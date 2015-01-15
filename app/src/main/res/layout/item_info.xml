@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="180dp">
+
     <ImageView
         android:id="@+id/list_img"
         android:background="@android:color/white"
         android:layout_width="match_parent"
         android:layout_height="120dp"
         android:src="@drawable/example_1"
-        android:scaleType="center"/>
+        android:scaleType="center" />
+
     <TextView
         android:id="@+id/title"
         android:background="@android:color/white"
@@ -17,25 +20,27 @@
         android:text="发现世界上最美味的厨师"
         android:gravity="center"
         android:typeface="monospace"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
+
     <LinearLayout
         android:background="@android:color/white"
         android:layout_width="match_parent"
         android:layout_height="18dp"
         android:orientation="horizontal">
+
         <LinearLayout
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:paddingLeft="20dp"
-            >
+            android:paddingLeft="20dp">
+
             <ImageView
                 android:src="@drawable/ic_author_main"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="4"
-                />
+                android:layout_weight="4" />
+
             <TextView
                 android:id="@+id/author"
                 android:text="林清晓"
@@ -46,19 +51,20 @@
                 android:layout_height="match_parent" />
 
         </LinearLayout>
+
         <LinearLayout
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:paddingLeft="20dp"
-            >
+            android:paddingLeft="20dp">
+
             <ImageView
                 android:src="@drawable/ic_speaker_main"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="4"
-                />
+                android:layout_weight="4" />
+
             <TextView
                 android:id="@+id/speaker"
                 android:text="雨夜书筒"
@@ -69,19 +75,20 @@
                 android:layout_height="match_parent" />
 
         </LinearLayout>
+
         <LinearLayout
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:paddingLeft="20dp"
-            >
+            android:paddingLeft="20dp">
+
             <ImageView
                 android:src="@drawable/ic_time_main"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="4"
-                />
+                android:layout_weight="4" />
+
             <TextView
                 android:id="@+id/time"
                 android:text="9:14"
@@ -92,19 +99,20 @@
                 android:layout_height="match_parent" />
 
         </LinearLayout>
+
         <LinearLayout
             android:layout_weight="1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:paddingLeft="20dp"
-            >
+            android:paddingLeft="20dp">
+
             <ImageView
                 android:src="@drawable/ic_listen_main"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="4"
-                />
+                android:layout_weight="4" />
+
             <TextView
                 android:id="@+id/listen"
                 android:text="39次"
@@ -118,7 +126,7 @@
 
     </LinearLayout>
     <!--<TextView-->
-        <!--android:layout_weight="2"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent" />-->
+    <!--android:layout_weight="2"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent" />-->
 </LinearLayout>

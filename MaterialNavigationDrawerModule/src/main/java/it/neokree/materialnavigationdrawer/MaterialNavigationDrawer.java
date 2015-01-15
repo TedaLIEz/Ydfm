@@ -185,6 +185,7 @@ public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         CalligraphyConfig.initDefault("fonts/Roboto-Regular.ttf", R.attr.neokree_fontPath);
+//        CalligraphyConfig.initDefault("fonts/custom.TTF", R.attr.neokree_fontPath);
 
         Resources.Theme theme = this.getTheme();
         TypedValue typedValue = new TypedValue();

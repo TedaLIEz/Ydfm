@@ -9,8 +9,10 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import com.hustascii.ydfm.fragment.BaseFragment;
@@ -34,8 +36,8 @@ public class MainActivity extends MaterialNavigationDrawer {
     public void init(Bundle savedInstanceState) {
 
 
-
-        this.setDrawerHeaderImage(this.getResources().getDrawable(R.drawable.bamboo));
+        View view = LayoutInflater.from(this).inflate(R.layout.custom_drawer,null);
+        setDrawerHeaderCustom(view);
 
         // create sections
         section1 = this.newSection("悦读",getFragmentInstance(Globles.BASE_URL + "channel/1/"));
@@ -58,7 +60,6 @@ public class MainActivity extends MaterialNavigationDrawer {
         this.addSection(collectSection);
         this.addSection(settingsSection);
 
-//        this.addSection(last);
 
         this.setBackPattern(MaterialNavigationDrawer.BACKPATTERN_BACK_TO_FIRST);
     }

@@ -8,6 +8,7 @@
     </style>
     <style name="NavigationDrawer" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar.TranslucentKitKatStatusBar">
         <!-- Customize your theme here. -->
+
         <item name="colorPrimary">#F36B63</item>
         <item name="colorPrimaryDark">#F36B63</item>
         <item name="colorAccent">#FFFFFF</item>
@@ -15,9 +16,40 @@
 
     <style name="ImageHeaderTheme" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar">
         <!-- Customize your theme here. -->
+
         <item name="colorPrimary">#F36B63</item>
         <item name="colorPrimaryDark">#F36B63</item>
         <item name="colorAccent">#FFFFFF</item>
         <item name="drawerType">@integer/DRAWERTYPE_IMAGE</item>
     </style>
+
+    <style name="ImageHeaderThemeTranslucent" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:windowIsTranslucent">true</item>
+
+        <item name="colorPrimary">#F36B63</item>
+        <item name="colorPrimaryDark">#F36B63</item>
+        <item name="colorAccent">#FFFFFF</item>
+        <item name="drawerType">@integer/DRAWERTYPE_IMAGE</item>
+
+    </style>
+
+    <style name="CustomHeader" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar.TranslucentKitKatStatusBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">#F36B63</item>
+        <item name="colorPrimaryDark">#F36B63</item>
+        <item name="colorAccent">#FFFFFF</item>
+        <item name="drawerType">@integer/DRAWERTYPE_CUSTOM</item>
+    </style>
+
+    <style name="CustomHeaderTranslucent" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar.TranslucentKitKatStatusBar">
+        <!-- Customize your theme here. -->
+        <item name="android:windowIsTranslucent">true</item>
+
+        <item name="colorPrimary">#F36B63</item>
+        <item name="colorPrimaryDark">#F36B63</item>
+        <item name="colorAccent">#FFFFFF</item>
+        <item name="drawerType">@integer/DRAWERTYPE_CUSTOM</item>
+    </style>
+
 </resources>

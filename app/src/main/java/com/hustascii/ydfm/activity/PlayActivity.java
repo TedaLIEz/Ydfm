@@ -1,12 +1,29 @@
 package com.hustascii.ydfm.activity;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.hustascii.ydfm.R;
+import com.hustascii.ydfm.util.Globles;
 
 import me.imid.swipebacklayout.lib.SwipeBackLayout;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
@@ -17,15 +34,24 @@ public class PlayActivity extends SwipeBackActivity{
     private static final int VIBRATE_DURATION = 20;
 
     private SwipeBackLayout mSwipeBackLayout;
+    private int primaryColor;
 
+    private TextView statusBar;
+    private Toolbar toolbar;
+    private ActionBar actionBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
+
+        statusBar = (TextView)findViewById(R.id.statusBar);
+        Log.v("height",String.valueOf(Globles.getStatusBarHeight(this)));
+        statusBar.setHeight(Globles.getStatusBarHeight(this));
+        statusBar.setBackgroundColor(Color.parseColor("#F36B63"));
+        toolbar = (Toolbar)findViewById(R.id.toolbar);
+
         mSwipeBackLayout = getSwipeBackLayout();
-
         mSwipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
-
         mSwipeBackLayout.addSwipeListener(new SwipeBackLayout.SwipeListener() {
             @Override
             public void onScrollStateChange(int state, float scrollPercent) {
@@ -76,5 +102,7 @@ public class PlayActivity extends SwipeBackActivity{
         };
         vibrator.vibrate(pattern, -1);
     }
+
+
 
 }

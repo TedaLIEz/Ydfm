@@ -1,1 +1,1 @@
-include ':app', ':MaterialNavigationDrawerModule', ':library'
+include ':app', ':MaterialNavigationDrawerModule', ':library', ':seekbarlibrary'
