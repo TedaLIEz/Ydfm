@@ -31,6 +31,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class BaseFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
@@ -69,7 +70,6 @@ public class BaseFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         View view = inflater.inflate(R.layout.activity_main, null, false);
         mListView = (ListView) view.findViewById(R.id.infolist);
         swipeLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh);
-
         swipeLayout.setOnRefreshListener(this);
         swipeLayout.setColorScheme(android.R.color.holo_red_light, android.R.color.holo_green_light,
                 android.R.color.holo_blue_bright, android.R.color.holo_orange_light);
@@ -113,6 +113,8 @@ public class BaseFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 }
             }
         });
+
+
     }
 
     public String getUrl() {
@@ -140,7 +142,9 @@ public class BaseFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Item item = mList.get(i);
                 Intent intent = new Intent(getActivity(), PlayActivity.class);
+                intent.putExtra("map",item);
                 startActivity(intent);
                 getActivity().overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
             }

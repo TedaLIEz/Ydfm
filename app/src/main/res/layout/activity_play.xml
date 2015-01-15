@@ -28,6 +28,7 @@
         android:padding="15dp">
 
         <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/myimg"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
             android:scaleType="centerCrop"

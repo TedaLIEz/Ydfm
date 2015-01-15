@@ -1,9 +1,12 @@
 package com.hustascii.ydfm.beans;
 
+import java.io.Serializable;
+
 /**
  * Created by wei on 15-1-13.
  */
-public class Item {
+public class Item implements Serializable{
+    private static final long serialVersionUID = -7060210544600464481L;
     private String id;
     private String title;
     private String author;
