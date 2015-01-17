@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
+    <attr name="neokree:fontPath" format="string"/>
     <declare-styleable name="CircularImage">
         <attr name="circle_border_width" format="dimension" />
         <attr name="circle_border_color" format="color" />

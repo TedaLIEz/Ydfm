@@ -63,6 +63,8 @@ public class MaterialSection<Fragment> implements View.OnTouchListener {
     private Intent targetIntent;
     private MaterialSectionListener targetListener;
 
+
+    private Boolean isCustom;
     @Deprecated
     public MaterialSection(Context ctx, boolean hasIcon, int target ) {
         this(ctx,hasIcon,false,target);
@@ -70,23 +72,32 @@ public class MaterialSection<Fragment> implements View.OnTouchListener {
 
     public MaterialSection(Context ctx, boolean hasIcon,boolean hasRippleSupport, int target ) {
         rippleSupport = hasRippleSupport;
-
+        isCustom = false;
         if(rippleAnimationSupport()) {
             // section with ripple effect
+            if(!isCustom) {
+                if (!hasIcon) {
+                    view = LayoutInflater.from(ctx).inflate(R.layout.layout_material_section_ripple_custom, null);
 
-            if (!hasIcon) {
+                    text = (TextView) view.findViewById(R.id.section_text);
+                    notifications = (TextView) view.findViewById(R.id.section_notification);
+                    ripple = (RevealColorView) view.findViewById(R.id.section_ripple);
+                } else {
+                    view = LayoutInflater.from(ctx).inflate(R.layout.layout_material_section_icon_ripple, null);
+
+                    text = (TextView) view.findViewById(R.id.section_text);
+                    icon = (ImageView) view.findViewById(R.id.section_icon);
+                    notifications = (TextView) view.findViewById(R.id.section_notification);
+                    ripple = (RevealColorView) view.findViewById(R.id.section_ripple);
+                }
+            }else{
                 view = LayoutInflater.from(ctx).inflate(R.layout.layout_material_section_ripple, null);
 
                 text = (TextView) view.findViewById(R.id.section_text);
                 notifications = (TextView) view.findViewById(R.id.section_notification);
                 ripple = (RevealColorView) view.findViewById(R.id.section_ripple);
-            } else {
-                view = LayoutInflater.from(ctx).inflate(R.layout.layout_material_section_icon_ripple, null);
 
-                text = (TextView) view.findViewById(R.id.section_text);
-                icon = (ImageView) view.findViewById(R.id.section_icon);
-                notifications = (TextView) view.findViewById(R.id.section_notification);
-                ripple = (RevealColorView) view.findViewById(R.id.section_ripple);
+
             }
 
         }

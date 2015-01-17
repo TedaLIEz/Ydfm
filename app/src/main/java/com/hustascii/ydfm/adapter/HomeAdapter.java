@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.hustascii.ydfm.R;
 import com.hustascii.ydfm.beans.Item;
+import com.hustascii.ydfm.util.AnimateFirstDisplayListener;
 import com.hustascii.ydfm.util.Globles;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -89,14 +90,18 @@ public class HomeAdapter extends BaseAdapter {
         final Item item = mList.get(i) ;
         if(!mBusy){
             Log.v("item.url", item.getImgUrl());
-            mImageLoader.displayImage(Globles.BASE_URL+item.getImgUrl().substring(1), holder.mImg, options);
+            mImageLoader.displayImage(Globles.BASE_URL+item.getImgUrl().substring(1), holder.mImg, options,new AnimateFirstDisplayListener());
         }else{
             mImageLoader.displayImage(item.getImgUrl(), holder.mImg, options);
 
         }
         holder.mTitle.setText(item.getTitle());
         holder.mAuthor.setText(item.getAuthor());
-        holder.mSpeaker.setText(item.getSpeaker());
+        if(item.getSpeaker().length()>4){
+            holder.mSpeaker.setText(item.getSpeaker().substring(0,4)+"...");
+        }else{
+            holder.mSpeaker.setText(item.getSpeaker());
+        }
         holder.mListen.setText(item.getListen());
         holder.mTimer.setText(item.getTime());
 

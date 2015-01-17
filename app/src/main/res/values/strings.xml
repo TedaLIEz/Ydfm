@@ -10,5 +10,6 @@
     <string name="action_rank">排行</string>
     <string name="title_activity_play">PlayActivity</string>
     <string name="title_activity_base">BaseActivity</string>
-
+    <string name="title_activity_article">ArticleActivity</string>
+    <string name="load">加载中</string>
 </resources>

@@ -29,6 +29,9 @@ dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.github.markushi:circlebutton:1.1'
     compile 'de.hdodenhof:circleimageview:1.2.1'
+    compile 'me.biubiubiu.justifytext:library:1.1'
+    compile 'com.pnikosis:materialish-progress:1.2'
+    compile 'uk.co.chrisjenx:calligraphy:1.2.0'
     compile project(':MaterialNavigationDrawerModule')
     compile project(':library')
     compile project(':seekbarlibrary')

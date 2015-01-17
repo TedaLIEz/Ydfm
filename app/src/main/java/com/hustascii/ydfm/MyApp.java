@@ -7,6 +7,8 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 
+import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
+
 /**
  * Created by wei on 15-1-13.
  */
@@ -30,5 +32,7 @@ public class MyApp extends Application {
 
         //Initialize ImageLoader with configuration
         ImageLoader.getInstance().init(config);
+
+        CalligraphyConfig.initDefault("fonts/custom.TTF", R.attr.fontPath);
     }
 }

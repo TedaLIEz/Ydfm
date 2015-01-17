@@ -9,6 +9,8 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.Vibrator;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -16,6 +18,7 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -23,16 +26,26 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hustascii.ydfm.R;
 import com.hustascii.ydfm.beans.Item;
+import com.hustascii.ydfm.util.AnimateFirstDisplayListener;
+import com.hustascii.ydfm.util.Crawls;
 import com.hustascii.ydfm.util.Globles;
+import com.hustascii.ydfm.util.MusicPlayer;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
+import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
+import org.apache.http.Header;
+
+import at.markushi.ui.CircleButton;
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.imid.swipebacklayout.lib.SwipeBackLayout;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
@@ -51,7 +64,12 @@ public class PlayActivity extends SwipeBackActivity{
     private ActionBar actionBar;
     private Item item;
     private Intent intent;
-
+    private DiscreteSeekBar myBar;
+    private CircleButton myBtn;
+    private int status;//播放状态
+    private MusicPlayer player;
+    private String contentUrl;
+    private String musicUrl;
 
 
     public TextView mTitle;
@@ -60,6 +78,8 @@ public class PlayActivity extends SwipeBackActivity{
     public TextView mSpeaker;
     public TextView mTimer;
     public TextView mListen;
+
+
 
 
     @Override
@@ -81,13 +101,69 @@ public class PlayActivity extends SwipeBackActivity{
         mTimer = (TextView)findViewById(R.id.time);
         mListen = (TextView)findViewById(R.id.listen);
         mImg = (CircleImageView)findViewById(R.id.myimg);
+        myBar = (DiscreteSeekBar)findViewById(R.id.myseekbar);
+        myBtn = (CircleButton)findViewById(R.id.mybtn);
+
+        status = 0;
+        myBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(status==0){
+                    status=1;
+                    myBtn.setImageResource(R.drawable.ic_stop_fm);
+                    if(musicUrl==null||musicUrl.equals("")) {
+                        AsyncHttpClient client = new AsyncHttpClient();
+                        client.get(Globles.BASE_URL+contentUrl.substring(1), new AsyncHttpResponseHandler() {
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                                super.onSuccess(statusCode, headers, responseBody);
+                                musicUrl = Globles.BASE_URL+Crawls.getMusicUrl(new String(responseBody)).substring(1);
+                                Log.v("musicUrl",musicUrl);
+
+                                if(musicUrl==null||musicUrl.equals("")) {
+                                    Toast.makeText(getApplicationContext(),"网页解析错误",Toast.LENGTH_SHORT).show();
+                                }else{
+                                    new Thread(new Runnable() {
+                                        @Override
+                                        public void run() {
+//                                            if() {
+                                                player.playUrl(musicUrl);
+//                                            }else{
+//                                                player.play();
+//                                            }
+                                        }
+                                    }).start();
+                                }
+                            }
+                        });
+                    }
+                }else{
+                    status=0;
+                    myBtn.setImageResource(R.drawable.ic_play_fm);
+                    player.pause();
+
+                }
+            }
+        });
+        player = new MusicPlayer(myBar);
+
+
+        myBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
+            @Override
+            public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
+                int v = value * player.mediaPlayer.getDuration()/seekBar.getMax();
+                player.mediaPlayer.seekTo(v);
+            }
+
+        });
+
 
         mTitle.setText(item.getTitle());
         mAuthor.setText(item.getAuthor());
         mSpeaker.setText(item.getSpeaker());
         mTimer.setText(item.getTime());
         mListen.setText(item.getListen());
-
+        contentUrl = item.getContentUrl();
         this.mImageLoader = ImageLoader.getInstance();
         options = new DisplayImageOptions.Builder()
                 .showImageOnLoading(R.drawable.example_1) //设置图片在下载期间显示的图片
@@ -102,7 +178,7 @@ public class PlayActivity extends SwipeBackActivity{
                 .displayer(new RoundedBitmapDisplayer(20))//是否设置为圆角，弧度为多少
                 .displayer(new FadeInBitmapDisplayer(100))//是否图片加载好后渐入的动画时间
                 .build();//构建完成
-        mImageLoader.displayImage(Globles.BASE_URL+item.getImgUrl().substring(1), mImg, options);
+        mImageLoader.displayImage(Globles.BASE_URL+item.getImgUrl().substring(1), mImg, options, new AnimateFirstDisplayListener());
 
         mSwipeBackLayout = getSwipeBackLayout();
         mSwipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
@@ -157,6 +233,42 @@ public class PlayActivity extends SwipeBackActivity{
         vibrator.vibrate(pattern, -1);
     }
 
+    public void takeArticle(View ivew){
+        if(contentUrl==null&&contentUrl.isEmpty()){
+            Toast.makeText(this,"url为空",Toast.LENGTH_SHORT).show();
+        }else{
+            Intent i = new Intent(PlayActivity.this,ArticleActivity.class);
+            i.putExtra("url",contentUrl);
+            startActivity(i);
+        }
 
+    }
+
+
+
+
+
+
+    private final class UIHandler extends Handler {
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+//                case PROCESSING: // 更新进度
+//                    progressBar.setProgress(msg.getData().getInt("size"));
+//                    float num = (float) progressBar.getProgress()
+//                            / (float) progressBar.getMax();
+//                    int result = (int) (num * 100); // 计算进度
+//                    resultView.setText(result + "%");
+//                    if (progressBar.getProgress() == progressBar.getMax()) { // 下载完成
+//                        Toast.makeText(getApplicationContext(), R.string.success,
+//                                Toast.LENGTH_LONG).show();
+//                    }
+//                    break;
+//                case FAILURE: // 下载失败
+//                    Toast.makeText(getApplicationContext(), R.string.error,
+//                            Toast.LENGTH_LONG).show();
+//                    break;
+            }
+        }
+    }
 
 }

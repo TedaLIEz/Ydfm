@@ -30,6 +30,11 @@
             android:name="com.hustascii.ydfm.activity.BaseActivity"
             android:label="@string/title_activity_base" >
         </activity>
+        <activity
+            android:name="com.hustascii.ydfm.activity.ArticleActivity"
+            android:label="@string/title_activity_article"
+            android:theme="@style/CustomHeaderTranslucent">
+        </activity>
     </application>
 
 </manifest>

@@ -1,5 +1,6 @@
 package com.hustascii.ydfm;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.provider.ContactsContract;
@@ -25,6 +26,7 @@ import it.neokree.materialnavigationdrawer.MaterialAccountListener;
 import it.neokree.materialnavigationdrawer.MaterialNavigationDrawer;
 import it.neokree.materialnavigationdrawer.MaterialSection;
 import it.neokree.materialnavigationdrawer.MaterialSectionListener;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 public class MainActivity extends MaterialNavigationDrawer {
@@ -49,6 +51,9 @@ public class MainActivity extends MaterialNavigationDrawer {
         this.addDivisor();
         collectSection= this.newSection("收藏",getFragmentInstance(Globles.BASE_URL + "channel/6/"));
         settingsSection = this.newSection("设置",getFragmentInstance(Globles.BASE_URL + "channel/6/"));
+
+
+
         // add your sections to the drawer
         this.addSection(section1);
         this.addSection(section2);
@@ -60,12 +65,33 @@ public class MainActivity extends MaterialNavigationDrawer {
         this.addSection(collectSection);
         this.addSection(settingsSection);
 
+        this.allowArrowAnimation();
 
-        this.setBackPattern(MaterialNavigationDrawer.BACKPATTERN_BACK_TO_FIRST);
+
+        int red = Color.parseColor("#F36B63");
+        section1.setSectionColor(red,red);
+        section2.setSectionColor(red,red);
+        section3.setSectionColor(red,red);
+        section4.setSectionColor(red,red);
+        section5.setSectionColor(red,red);
+        section6.setSectionColor(red,red);
+        collectSection.setSectionColor(red, red);
+        settingsSection.setSectionColor(red,red);
+
+
+        this.setBackPattern(MaterialNavigationDrawer.BACKPATTERN_CUSTOM);
     }
 
 
+    @Override
 
+    protected void attachBaseContext(Context newBase) {
+
+        // TODO Auto-generated method stub
+
+        super.attachBaseContext(new CalligraphyContextWrapper(newBase));
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

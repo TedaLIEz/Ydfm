@@ -174,7 +174,7 @@ public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivi
     @Override
     protected void attachBaseContext(Context newBase) {
         // init the Calligraphy library
-        super.attachBaseContext(new CalligraphyContextWrapper(newBase,R.attr.neokree_fontPath));
+        super.attachBaseContext(new CalligraphyContextWrapper(newBase,R.attr.fontPath));
     }
 
     @Override
@@ -184,8 +184,8 @@ public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivi
      */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        CalligraphyConfig.initDefault("fonts/Roboto-Regular.ttf", R.attr.neokree_fontPath);
-//        CalligraphyConfig.initDefault("fonts/custom.TTF", R.attr.neokree_fontPath);
+        CalligraphyConfig.initDefault("fonts/custom.TTF", R.attr.fontPath);
+//        CalligraphyConfig.initDefault("fonts/custom.ttf", R.attr.neokree_fontPath);
 
         Resources.Theme theme = this.getTheme();
         TypedValue typedValue = new TypedValue();

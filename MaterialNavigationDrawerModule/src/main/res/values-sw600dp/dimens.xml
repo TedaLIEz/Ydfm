@@ -2,4 +2,5 @@
 <resources>
     <!-- Tablet Dimensions -->
     <dimen name="drawerWidth">320dp</dimen>
+    <!--<dimen name="drawerWidth">250dp</dimen>-->
 </resources>
