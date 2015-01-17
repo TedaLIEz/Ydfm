@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merger version="3"><dataSet config="main"><source path="/home/wei/project/Ydfm/library/src/main/assets"/></dataSet><dataSet config="debug"><source path="/home/wei/project/Ydfm/library/src/debug/assets"/></dataSet></merger>
+<merger version="3"><dataSet config="main"><source path="/media/guojian/Data/Ydfm/library/src/main/assets"/></dataSet><dataSet config="debug"><source path="/media/guojian/Data/Ydfm/library/src/debug/assets"/></dataSet></merger>
