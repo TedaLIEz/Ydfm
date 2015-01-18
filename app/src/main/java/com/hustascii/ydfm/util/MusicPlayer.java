@@ -43,7 +43,7 @@ public class MusicPlayer implements OnBufferingUpdateListener, OnCompletionListe
             e.printStackTrace();
         }
         // 每一秒触发一次
-        //mTimer.schedule(timerTask, 0, 1000);
+        mTimer.schedule(timerTask, 0, 1000);
     }
 
     public static MusicPlayer getInstance(DiscreteSeekBar seekBar){
@@ -109,19 +109,24 @@ public class MusicPlayer implements OnBufferingUpdateListener, OnCompletionListe
         return 0;
     }
     public void prepare() {
-        try {
-            mediaPlayer.reset();
-            mediaPlayer.setDataSource(url); // 设置数据源
-            mediaPlayer.prepareAsync(); // prepare自动播放
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (SecurityException e) {
-            e.printStackTrace();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    mediaPlayer.reset();
+                    mediaPlayer.setDataSource(url); // 设置数据源
+                    mediaPlayer.prepare(); // prepare自动播放
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                } catch (SecurityException e) {
+                    e.printStackTrace();
+                } catch (IllegalStateException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
 
@@ -150,7 +155,7 @@ public class MusicPlayer implements OnBufferingUpdateListener, OnCompletionListe
     // 播放准备
     @Override
     public void onPrepared(MediaPlayer mp) {
-        //mp.start();
+        mp.start();
         Log.e("mediaPlayer", "onPrepared");
     }
 

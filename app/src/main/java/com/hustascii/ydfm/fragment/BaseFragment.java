@@ -90,7 +90,8 @@ public class BaseFragment extends Fragment{
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getData();
+//                getData();
+                refresh();
             }
         });
         swipeLayout.setOnLoadListener(new RefreshLayout.OnLoadListener() {
@@ -118,12 +119,50 @@ public class BaseFragment extends Fragment{
     }
 
     private void refresh(){
-        if(homeAdapter!=null) {
-            pd.show();
-            mList.clear();
-            getData();
-//            homeAdapter.notifyDataSetInvalidated();
-        }
+        AsyncHttpClient client = new AsyncHttpClient();
+
+        client.get(this.url + String.valueOf(page) + "/", new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers,
+                                  byte[] responseBody) {
+                try {
+                    if (statusCode == 200) {
+                        Toast.makeText(getActivity(), "数据下载成功!", Toast.LENGTH_SHORT)
+                                .show();
+                        Boolean is_change = true;
+                        Document document = Jsoup.parse(new String(responseBody));
+                        Elements authors = document.select("div.channel-meta").select("span:has(i.fa-pencil)");
+                        Elements speakers = document.select("div.channel-meta").select("span:has(i.fa-microphone)");
+                        Elements times = document.select("div.channel-meta").select("span:has(i.fa-clock-o)");
+                        Elements clicks = document.select("div.channel-meta").select("span:has(.fa-headphones)");
+                        Elements titles = document.select("div.channel-title").select("a");
+                        Elements urls = document.select("div.channel-title").select("a");
+                        Elements imgs = document.select("div.channel-pic").select("img");
+                        for (int i = 0; i < authors.size(); i++) {
+                            Item item = new Item(titles.get(i).text(), authors.get(i).text(), speakers.get(i).text(), times.get(i).text(), clicks.get(i).text(), imgs.get(i).attr("src"), urls.get(i).attr("href").toString());
+                            if((i==0)&&(item == mList.get(i))) {
+                                is_change = false;
+                                break;
+                            }
+                            else {
+                                mList.add(item);
+                            }
+                        }
+                        Log.v("body", new String(responseBody));
+//                        pd.dismiss();
+                        swipeLayout.setRefreshing(false);
+                        if(!is_change)
+                            homeAdapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(getActivity(),
+                                "网络访问异常，错误码：" + statusCode, Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     private void setView(){

@@ -119,16 +119,21 @@ public class PlayActivity extends SwipeBackActivity {
                         Toast.makeText(getApplicationContext(), "网页解析错误", Toast.LENGTH_SHORT).show();
                     } else {
 
-                        if (musicUrl.equals(player.getUrl())) {
-                            Log.v("status", "continue");
-                            if(player.isplay())
+
+                        if(player.isplay()){
+                            if(musicUrl.equals(player.getUrl())) {
                                 myBtn.setImageResource(R.drawable.ic_stop_fm);
+                                myBar.setProgress(player.getpos());
+                            }
+                        }else{
+                            if(musicUrl.equals(player.getUrl())){
+                                myBar.setProgress(player.getpos());
+                            }else {
 
-                        } else {
-                            player.setUrl(musicUrl);
-                            player.prepare();
-
+                                //player.prepare();
+                            }
                         }
+
                     }
                 }
             });
@@ -138,14 +143,26 @@ public class PlayActivity extends SwipeBackActivity {
         myBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (status == 0) {
-                    status = 1;
+
+                if (!player.isplay()) {
                     myBtn.setImageResource(R.drawable.ic_stop_fm);
-                    player.play();
+                    if(!musicUrl.equals(player.getUrl())){
+                        player.setUrl(musicUrl);
+                        player.prepare();
+                    }else{
+                        //player.setUrl(musicUrl);
+                        player.play();
+                    }
                 } else {
-                    status = 0;
-                    myBtn.setImageResource(R.drawable.ic_play_fm);
-                    player.pause();
+                    if(musicUrl.equals(player.getUrl())) {
+                        myBtn.setImageResource(R.drawable.ic_play_fm);
+                        player.pause();
+                    }else{
+                        myBtn.setImageResource(R.drawable.ic_stop_fm);
+                        player.setUrl(musicUrl);
+                        player.prepare();
+//                        player.play();
+                    }
 
                 }
             }
@@ -155,8 +172,8 @@ public class PlayActivity extends SwipeBackActivity {
         myBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                int v = value * player.mediaPlayer.getDuration() / seekBar.getMax();
-                player.mediaPlayer.seekTo(v);
+//                int v = value * player.mediaPlayer.getDuration() / seekBar.getMax();
+//                player.mediaPlayer.seekTo(v);
             }
 
         });
