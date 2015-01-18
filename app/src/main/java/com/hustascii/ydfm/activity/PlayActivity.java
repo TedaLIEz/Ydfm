@@ -51,7 +51,7 @@ import me.imid.swipebacklayout.lib.SwipeBackLayout;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
 
-public class PlayActivity extends SwipeBackActivity{
+public class PlayActivity extends SwipeBackActivity {
 
     private static final int VIBRATE_DURATION = 20;
 
@@ -80,78 +80,82 @@ public class PlayActivity extends SwipeBackActivity{
     public TextView mListen;
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
         intent = getIntent();
-        item = (Item)intent.getSerializableExtra("map");
-        statusBar = (TextView)findViewById(R.id.statusBar);
-        Log.v("height",String.valueOf(Globles.getStatusBarHeight(this)));
+        item = (Item) intent.getSerializableExtra("map");
+        statusBar = (TextView) findViewById(R.id.statusBar);
+        Log.v("height", String.valueOf(Globles.getStatusBarHeight(this)));
         statusBar.setHeight(Globles.getStatusBarHeight(this));
         statusBar.setBackgroundColor(Color.parseColor("#F36B63"));
-        toolbar = (Toolbar)findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        mTitle = (TextView)findViewById(R.id.title);
-        mAuthor = (TextView)findViewById(R.id.author);
-        mSpeaker = (TextView)findViewById(R.id.speaker);
-        mTimer = (TextView)findViewById(R.id.time);
-        mListen = (TextView)findViewById(R.id.listen);
-        mImg = (CircleImageView)findViewById(R.id.myimg);
-        myBar = (DiscreteSeekBar)findViewById(R.id.myseekbar);
-        myBtn = (CircleButton)findViewById(R.id.mybtn);
+        mTitle = (TextView) findViewById(R.id.title);
+        mAuthor = (TextView) findViewById(R.id.author);
+        mSpeaker = (TextView) findViewById(R.id.speaker);
+        mTimer = (TextView) findViewById(R.id.time);
+        mListen = (TextView) findViewById(R.id.listen);
+        mImg = (CircleImageView) findViewById(R.id.myimg);
+        myBar = (DiscreteSeekBar) findViewById(R.id.myseekbar);
+        myBtn = (CircleButton) findViewById(R.id.mybtn);
 
         status = 0;
+        player = MusicPlayer.getInstance(myBar);
+
+        contentUrl = item.getContentUrl();
+        if (musicUrl == null || musicUrl.equals("")) {
+            AsyncHttpClient client = new AsyncHttpClient();
+            client.get(Globles.BASE_URL + contentUrl.substring(1), new AsyncHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                    super.onSuccess(statusCode, headers, responseBody);
+                    musicUrl = Globles.BASE_URL + Crawls.getMusicUrl(new String(responseBody)).substring(1);
+                    Log.v("musicUrl", musicUrl);
+
+                    if (musicUrl == null || musicUrl.equals("")) {
+                        Toast.makeText(getApplicationContext(), "网页解析错误", Toast.LENGTH_SHORT).show();
+                    } else {
+
+                        if (musicUrl.equals(player.getUrl())) {
+                            Log.v("status", "continue");
+                            if(player.isplay())
+                                myBtn.setImageResource(R.drawable.ic_stop_fm);
+
+                        } else {
+                            player.setUrl(musicUrl);
+                            player.prepare();
+
+                        }
+                    }
+                }
+            });
+        }
+
+
         myBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(status==0){
-                    status=1;
+                if (status == 0) {
+                    status = 1;
                     myBtn.setImageResource(R.drawable.ic_stop_fm);
-                    if(musicUrl==null||musicUrl.equals("")) {
-                        AsyncHttpClient client = new AsyncHttpClient();
-                        client.get(Globles.BASE_URL+contentUrl.substring(1), new AsyncHttpResponseHandler() {
-                            @Override
-                            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                                super.onSuccess(statusCode, headers, responseBody);
-                                musicUrl = Globles.BASE_URL+Crawls.getMusicUrl(new String(responseBody)).substring(1);
-                                Log.v("musicUrl",musicUrl);
-
-                                if(musicUrl==null||musicUrl.equals("")) {
-                                    Toast.makeText(getApplicationContext(),"网页解析错误",Toast.LENGTH_SHORT).show();
-                                }else{
-                                    new Thread(new Runnable() {
-                                        @Override
-                                        public void run() {
-//                                            if() {
-                                                player.playUrl(musicUrl);
-//                                            }else{
-//                                                player.play();
-//                                            }
-                                        }
-                                    }).start();
-                                }
-                            }
-                        });
-                    }
-                }else{
-                    status=0;
+                    player.play();
+                } else {
+                    status = 0;
                     myBtn.setImageResource(R.drawable.ic_play_fm);
                     player.pause();
 
                 }
             }
         });
-        player = new MusicPlayer(myBar);
 
 
         myBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-                int v = value * player.mediaPlayer.getDuration()/seekBar.getMax();
+                int v = value * player.mediaPlayer.getDuration() / seekBar.getMax();
                 player.mediaPlayer.seekTo(v);
             }
 
@@ -178,7 +182,7 @@ public class PlayActivity extends SwipeBackActivity{
                 .displayer(new RoundedBitmapDisplayer(20))//是否设置为圆角，弧度为多少
                 .displayer(new FadeInBitmapDisplayer(100))//是否图片加载好后渐入的动画时间
                 .build();//构建完成
-        mImageLoader.displayImage(Globles.BASE_URL+item.getImgUrl().substring(1), mImg, options, new AnimateFirstDisplayListener());
+        mImageLoader.displayImage(Globles.BASE_URL + item.getImgUrl().substring(1), mImg, options, new AnimateFirstDisplayListener());
 
         mSwipeBackLayout = getSwipeBackLayout();
         mSwipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
@@ -224,7 +228,6 @@ public class PlayActivity extends SwipeBackActivity{
     }
 
 
-
     private void vibrate(long duration) {
         Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         long[] pattern = {
@@ -233,20 +236,16 @@ public class PlayActivity extends SwipeBackActivity{
         vibrator.vibrate(pattern, -1);
     }
 
-    public void takeArticle(View ivew){
-        if(contentUrl==null&&contentUrl.isEmpty()){
-            Toast.makeText(this,"url为空",Toast.LENGTH_SHORT).show();
-        }else{
-            Intent i = new Intent(PlayActivity.this,ArticleActivity.class);
-            i.putExtra("url",contentUrl);
+    public void takeArticle(View ivew) {
+        if (contentUrl == null && contentUrl.isEmpty()) {
+            Toast.makeText(this, "url为空", Toast.LENGTH_SHORT).show();
+        } else {
+            Intent i = new Intent(PlayActivity.this, ArticleActivity.class);
+            i.putExtra("url", contentUrl);
             startActivity(i);
         }
 
     }
-
-
-
-
 
 
     private final class UIHandler extends Handler {

@@ -27,7 +27,10 @@ public class MusicPlayer implements OnBufferingUpdateListener, OnCompletionListe
     private DiscreteSeekBar seekBar; // 拖动条
     private Timer mTimer = new Timer(); // 计时器
 
-    // 初始化播放器
+    private String url;
+
+    private static MusicPlayer musicPlayer;// 初始化播放器
+
     public MusicPlayer(DiscreteSeekBar seekBar) {
         super();
         this.seekBar = seekBar;
@@ -40,7 +43,24 @@ public class MusicPlayer implements OnBufferingUpdateListener, OnCompletionListe
             e.printStackTrace();
         }
         // 每一秒触发一次
-        mTimer.schedule(timerTask, 0, 1000);
+        //mTimer.schedule(timerTask, 0, 1000);
+    }
+
+    public static MusicPlayer getInstance(DiscreteSeekBar seekBar){
+        if(musicPlayer==null)
+            musicPlayer = new MusicPlayer(seekBar);
+        else{
+            musicPlayer.setSeekBar(seekBar);
+        }
+        return musicPlayer;
+    }
+
+    public DiscreteSeekBar getSeekBar() {
+        return seekBar;
+    }
+
+    public void setSeekBar(DiscreteSeekBar seekBar) {
+        this.seekBar = seekBar;
     }
 
     // 计时器
@@ -74,14 +94,25 @@ public class MusicPlayer implements OnBufferingUpdateListener, OnCompletionListe
         mediaPlayer.start();
     }
 
-    /**
-     * @param url url地址
-     */
-    public void playUrl(String url) {
+
+    public Boolean isplay(){
+        return mediaPlayer.isPlaying();
+    }
+
+    public int getpos(){
+        int position = mediaPlayer.getCurrentPosition();
+        int duration = mediaPlayer.getDuration();
+        if(duration>0) {
+            long pos = seekBar.getMax() * position / duration;
+            return (int)pos;
+        }
+        return 0;
+    }
+    public void prepare() {
         try {
             mediaPlayer.reset();
             mediaPlayer.setDataSource(url); // 设置数据源
-            mediaPlayer.prepare(); // prepare自动播放
+            mediaPlayer.prepareAsync(); // prepare自动播放
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (SecurityException e) {
@@ -93,6 +124,15 @@ public class MusicPlayer implements OnBufferingUpdateListener, OnCompletionListe
         }
     }
 
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     // 暂停
     public void pause() {
         mediaPlayer.pause();
@@ -102,15 +142,15 @@ public class MusicPlayer implements OnBufferingUpdateListener, OnCompletionListe
     public void stop() {
         if (mediaPlayer != null) {
             mediaPlayer.stop();
-            mediaPlayer.release();
-            mediaPlayer = null;
+            //mediaPlayer.release();
+            //mediaPlayer = null;
         }
     }
 
     // 播放准备
     @Override
     public void onPrepared(MediaPlayer mp) {
-        mp.start();
+        //mp.start();
         Log.e("mediaPlayer", "onPrepared");
     }
 
@@ -130,6 +170,13 @@ public class MusicPlayer implements OnBufferingUpdateListener, OnCompletionListe
         int currentProgress = seekBar.getMax()
                 * mediaPlayer.getCurrentPosition() / mediaPlayer.getDuration();
         Log.e(currentProgress + "% play", percent + " buffer");
+    }
+
+    public void release(){
+        if(mediaPlayer != null){
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
     }
 
 }
