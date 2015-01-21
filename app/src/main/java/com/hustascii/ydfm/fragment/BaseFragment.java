@@ -1,6 +1,7 @@
 package com.hustascii.ydfm.fragment;
 
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +50,8 @@ public class BaseFragment extends Fragment{
     private ProgressDialog pd;
     private ImageLoader mImageLoader;
     private int page;
+    private Toolbar toolbar;
+    private ActionBar bar;
     public BaseFragment() {
 
     }
@@ -60,6 +64,7 @@ public class BaseFragment extends Fragment{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        url = this.getTag();
+
         page = 1;
 
         pd = new ProgressDialog(this.getActivity());
@@ -74,9 +79,10 @@ public class BaseFragment extends Fragment{
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
 
-
-
+        bar=getActivity().getActionBar();
         View view = inflater.inflate(R.layout.activity_main, null, false);
+        toolbar=(Toolbar)view.findViewById(R.id.toolbar);
+
 
         mListView = (ListView) view.findViewById(R.id.infolist);
         swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_refresh);

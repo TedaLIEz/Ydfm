@@ -87,11 +87,23 @@ public class PlayActivity extends SwipeBackActivity {
 
         intent = getIntent();
         item = (Item) intent.getSerializableExtra("map");
+        Log.i("build",""+Build.VERSION.SDK_INT);
         statusBar = (TextView) findViewById(R.id.statusBar);
-        Log.v("height", String.valueOf(Globles.getStatusBarHeight(this)));
-        statusBar.setHeight(Globles.getStatusBarHeight(this));
-        statusBar.setBackgroundColor(Color.parseColor("#F36B63"));
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            statusBar = (TextView) findViewById(R.id.statusBar);
+            Log.v("height", String.valueOf(Globles.getStatusBarHeight(this)));
+            statusBar.setHeight(Globles.getStatusBarHeight(this));
+            statusBar.setBackgroundColor(Color.parseColor("#F36B63"));
+
+        }else{
+            statusBar.setHeight(0);
+
+        }
         toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        toolbar.setNavigationIcon(android.R.drawable.ic_menu_revert);
+        toolbar.setTitle("MyTitle");
 
         mTitle = (TextView) findViewById(R.id.title);
         mAuthor = (TextView) findViewById(R.id.author);
@@ -101,9 +113,10 @@ public class PlayActivity extends SwipeBackActivity {
         mImg = (CircleImageView) findViewById(R.id.myimg);
         myBar = (DiscreteSeekBar) findViewById(R.id.myseekbar);
         myBtn = (CircleButton) findViewById(R.id.mybtn);
-
         status = 0;
         player = MusicPlayer.getInstance(myBar);
+
+
 
         contentUrl = item.getContentUrl();
         if (musicUrl == null || musicUrl.equals("")) {
@@ -146,6 +159,7 @@ public class PlayActivity extends SwipeBackActivity {
 
                 if (!player.isplay()) {
                     myBtn.setImageResource(R.drawable.ic_stop_fm);
+                    Log.i("mp3",musicUrl);
                     if(!musicUrl.equals(player.getUrl())){
                         player.setUrl(musicUrl);
                         player.prepare();
@@ -237,9 +251,9 @@ public class PlayActivity extends SwipeBackActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
 
         return super.onOptionsItemSelected(item);
     }
