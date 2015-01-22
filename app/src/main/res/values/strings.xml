@@ -12,4 +12,7 @@
     <string name="title_activity_base">BaseActivity</string>
     <string name="title_activity_article">ArticleActivity</string>
     <string name="load">加载中</string>
+    <string name="title_activity_my_swipe_back">MySwipeBackActivity</string>
+    <string name="title_activity_search">SearchActivity</string>
+
 </resources>

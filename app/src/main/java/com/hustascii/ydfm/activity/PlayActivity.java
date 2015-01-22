@@ -7,12 +7,14 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
@@ -30,10 +32,12 @@ import android.widget.Toast;
 
 import com.hustascii.ydfm.R;
 import com.hustascii.ydfm.beans.Item;
+import com.hustascii.ydfm.fragment.BaseFragment;
 import com.hustascii.ydfm.util.AnimateFirstDisplayListener;
 import com.hustascii.ydfm.util.Crawls;
 import com.hustascii.ydfm.util.Globles;
 import com.hustascii.ydfm.util.MusicPlayer;
+import com.hustascii.ydfm.view.MySwipeBackActivity;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -45,16 +49,18 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.apache.http.Header;
 
+import java.util.zip.Inflater;
+
 import at.markushi.ui.CircleButton;
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.imid.swipebacklayout.lib.SwipeBackLayout;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
 
-public class PlayActivity extends SwipeBackActivity {
+public class PlayActivity extends MySwipeBackActivity {
 
     private static final int VIBRATE_DURATION = 20;
-
+    private boolean isLike;
     private SwipeBackLayout mSwipeBackLayout;
     private int primaryColor;
     private ImageLoader mImageLoader;
@@ -84,11 +90,20 @@ public class PlayActivity extends SwipeBackActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
-
         intent = getIntent();
+        isLike=true;
         item = (Item) intent.getSerializableExtra("map");
         Log.i("build",""+Build.VERSION.SDK_INT);
         statusBar = (TextView) findViewById(R.id.statusBar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("Play");
+        toolbar.setNavigationIcon(R.drawable.ic_back_fm);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
             statusBar = (TextView) findViewById(R.id.statusBar);
@@ -100,10 +115,11 @@ public class PlayActivity extends SwipeBackActivity {
             statusBar.setHeight(0);
 
         }
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
 
-        toolbar.setNavigationIcon(android.R.drawable.ic_menu_revert);
-        toolbar.setTitle("MyTitle");
+        setSupportActionBar(toolbar);
+
+
+
 
         mTitle = (TextView) findViewById(R.id.title);
         mAuthor = (TextView) findViewById(R.id.author);
@@ -240,6 +256,14 @@ public class PlayActivity extends SwipeBackActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_play, menu);
+        if(isLike){
+            Drawable drawable=getResources().getDrawable(R.drawable.ic_heart_press_fm);
+            drawable.setAlpha(100);
+            menu.findItem(R.id.action_love).setIcon(drawable);
+
+        }else{
+            menu.findItem(R.id.action_love).setIcon(R.drawable.ic_heart_normal_fm);
+        }
         return true;
     }
 
@@ -248,8 +272,24 @@ public class PlayActivity extends SwipeBackActivity {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
+        int id = item.getItemId();
+        switch (id){
+            case R.id.action_love:
+                if(isLike){
+                    isLike=false;
+                    item.setIcon(R.drawable.ic_heart_normal_fm);
+                }else{
+                    isLike=true;
+                    Drawable drawable=getResources().getDrawable(R.drawable.ic_heart_press_fm);
+                    drawable.setAlpha(100);
+                    item.setIcon(drawable);
+                }
+                break;
+            case android.R.id.home:
+                finish();
+                break;
+        }
         //noinspection SimplifiableIfStatement
 //        if (id == R.id.action_settings) {
 //            return true;

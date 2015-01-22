@@ -7,12 +7,12 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-        android:name="com.hustascii.ydfm.MyApp"
+        android:name=".MyApp"
         android:allowBackup="true"
         android:icon="@drawable/ic_logo"
         android:label="@string/app_name" >
         <activity
-            android:name="com.hustascii.ydfm.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/CustomHeader" >
             <intent-filter>
@@ -22,17 +22,26 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.hustascii.ydfm.activity.PlayActivity"
+            android:name=".activity.PlayActivity"
             android:label="@string/title_activity_play"
             android:theme="@style/CustomHeaderTranslucent" >
         </activity>
         <activity
-            android:name="com.hustascii.ydfm.activity.BaseActivity"
+            android:name=".activity.BaseActivity"
             android:label="@string/title_activity_base" >
         </activity>
         <activity
-            android:name="com.hustascii.ydfm.activity.ArticleActivity"
+            android:name=".activity.ArticleActivity"
             android:label="@string/title_activity_article"
+            android:theme="@style/CustomHeaderTranslucent" >
+        </activity>
+        <activity
+            android:name=".view.MySwipeBackActivity"
+            android:label="@string/title_activity_my_swipe_back" >
+        </activity>
+        <activity
+            android:name=".activity.SearchActivity"
+            android:label="@string/title_activity_search"
             android:theme="@style/CustomHeaderTranslucent">
         </activity>
     </application>

@@ -25,10 +25,15 @@ import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import com.hustascii.ydfm.activity.SearchActivity;
 import com.hustascii.ydfm.fragment.BaseFragment;
 import com.hustascii.ydfm.fragment.HomeFragment;
 import com.hustascii.ydfm.util.FontHelper;
 import com.hustascii.ydfm.util.Globles;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import it.neokree.materialnavigationdrawer.MaterialAccount;
 import it.neokree.materialnavigationdrawer.MaterialAccountListener;
@@ -106,7 +111,6 @@ public class MainActivity extends MaterialNavigationDrawer {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        android.support.v7.widget.SearchView searchView= (android.support.v7.widget.SearchView) menu.findItem(R.id.action_search).getActionView();
         return true;
     }
 
@@ -116,7 +120,11 @@ public class MainActivity extends MaterialNavigationDrawer {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
+        if(id==R.id.action_search){
+            Intent intent=new Intent();
+            intent.setClass(MainActivity.this, SearchActivity.class);
+            startActivity(intent);
+        }
         //noinspection SimplifiableIfStatement
 
         return super.onOptionsItemSelected(item);

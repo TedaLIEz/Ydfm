@@ -2,12 +2,16 @@ package com.hustascii.ydfm.activity;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hustascii.ydfm.R;
@@ -29,6 +33,8 @@ public class ArticleActivity extends ActionBarActivity {
     private String contentUrl;
     private ProgressWheel wheel;
     private SwipeRefreshLayout refreshLayout;
+    private TextView statusBar;
+    private Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +44,27 @@ public class ArticleActivity extends ActionBarActivity {
         Intent intent = getIntent();
         contentUrl = intent.getStringExtra("url");
         articleText = (JustifyTextView)findViewById(R.id.article);
+        statusBar=(TextView)findViewById(R.id.statusBar);
+        toolbar=(Toolbar)findViewById(R.id.toolbar);
+        toolbar.setTitle("Article");
+        toolbar.setNavigationIcon(R.drawable.ic_back_fm);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            statusBar = (TextView) findViewById(R.id.statusBar);
+            Log.v("height", String.valueOf(Globles.getStatusBarHeight(this)));
+            statusBar.setHeight(Globles.getStatusBarHeight(this));
+            statusBar.setBackgroundColor(Color.parseColor("#F36B63"));
+
+        }else{
+            statusBar.setHeight(0);
+
+        }
+        setSupportActionBar(toolbar);
 //        wheel = new ProgressWheel(this);
 //        wheel.setBarColor(Color.RED);
 //        wheel.spin();
@@ -118,8 +145,8 @@ public class ArticleActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == android.R.id.home) {
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
