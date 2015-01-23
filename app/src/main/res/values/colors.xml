@@ -2,4 +2,6 @@
 <resources>
     <color name="textColor">#000000</color>
     <color name="SearchColor">#ffffff</color>
+    <color name="clickGrey">#d0d0d0</color>
+    <color name="bg">#F3F3F3</color>
 </resources>

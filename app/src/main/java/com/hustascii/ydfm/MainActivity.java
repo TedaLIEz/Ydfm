@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.hustascii.ydfm.activity.SearchActivity;
 import com.hustascii.ydfm.fragment.BaseFragment;
 import com.hustascii.ydfm.fragment.HomeFragment;
+import com.hustascii.ydfm.fragment.SettingFragment;
 import com.hustascii.ydfm.util.FontHelper;
 import com.hustascii.ydfm.util.Globles;
 
@@ -64,7 +65,7 @@ public class MainActivity extends MaterialNavigationDrawer {
         section6 = this.newSection("Labs",getFragmentInstance(Globles.BASE_URL + "channel/6/"));
         this.addDivisor();
         collectSection= this.newSection("收藏",getFragmentInstance(Globles.BASE_URL + "channel/6/"));
-        settingsSection = this.newSection("设置",getFragmentInstance(Globles.BASE_URL + "channel/6/"));
+        settingsSection = this.newSection("设置",new SettingFragment());
 
 
 
@@ -124,6 +125,7 @@ public class MainActivity extends MaterialNavigationDrawer {
             Intent intent=new Intent();
             intent.setClass(MainActivity.this, SearchActivity.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.abc_fade_in,R.anim.abc_fade_out);
         }
         //noinspection SimplifiableIfStatement
 
@@ -147,5 +149,11 @@ public class MainActivity extends MaterialNavigationDrawer {
             return (BaseFragment)fragmentManager.findFragmentByTag(url);
         }
 
+    }
+    public void AboutUs(View view){
+           Toast.makeText(MainActivity.this,"Click",Toast.LENGTH_SHORT).show();
+    }
+    public void ClearMem(View view){
+        Toast.makeText(MainActivity.this,"Click",Toast.LENGTH_SHORT).show();
     }
 }

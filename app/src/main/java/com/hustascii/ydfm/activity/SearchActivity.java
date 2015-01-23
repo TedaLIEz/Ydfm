@@ -86,9 +86,8 @@ public class SearchActivity extends MySwipeBackActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_search, menu);
         android.support.v7.widget.SearchView searchView= (android.support.v7.widget.SearchView) menu.findItem(R.id.search).getActionView();
-        if(searchView.getQuery()!=null){
-            searchView.setSubmitButtonEnabled(true);
-        }
+        searchView.setIconified(false);
+        searchView.setIconifiedByDefault(true);
         searchView.setQueryHint("查找");
         return true;
     }
