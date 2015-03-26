@@ -1,6 +1,7 @@
 package com.hustascii.ydfm.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.hustascii.ydfm.MainActivity;
 import com.hustascii.ydfm.R;
 import com.hustascii.ydfm.util.Globles;
 import com.hustascii.ydfm.view.MySwipeBackActivity;
@@ -32,6 +34,7 @@ public class SearchActivity extends MySwipeBackActivity {
     private Toolbar toolbar;
     private ListView his_lv;
     private SwipeBackLayout mSwipeBackLayout;
+    private android.support.v7.widget.SearchView searchView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +82,8 @@ public class SearchActivity extends MySwipeBackActivity {
                 vibrate(VIBRATE_DURATION);
             }
         });
+
+
     }
 
 
@@ -86,16 +91,23 @@ public class SearchActivity extends MySwipeBackActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_search, menu);
-        android.support.v7.widget.SearchView searchView= (android.support.v7.widget.SearchView) menu.findItem(R.id.search).getActionView();
+        searchView = (android.support.v7.widget.SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setIconified(false);
         searchView.setIconifiedByDefault(true);
         searchView.setQueryHint("查找");
 
-
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
+                Intent intent = new Intent(SearchActivity.this, MainActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("key",s);
+//                Log.v("Key",bundle.getString("key"));
+                intent.putExtras(bundle);
+                setResult(1000,intent);
                 finish();
+//                startActivity(intent);
+
                 return false;
             }
 
@@ -104,8 +116,6 @@ public class SearchActivity extends MySwipeBackActivity {
                 return false;
             }
         });
-
-
         return true;
     }
 

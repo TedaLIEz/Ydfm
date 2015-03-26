@@ -28,7 +28,7 @@
         android:typeface="monospace"
         fontPath="fonts/custom.TTF"
         android:textColor="@color/textColor"
-        android:textStyle="bold" />
+        android:textStyle="bold"/>
 
     <LinearLayout
         android:background="@android:color/white"

@@ -141,6 +141,7 @@ public class PlayActivity extends MySwipeBackActivity {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                     super.onSuccess(statusCode, headers, responseBody);
+                    Log.v("result",new String(responseBody));
                     musicUrl = Globles.BASE_URL + Crawls.getMusicUrl(new String(responseBody)).substring(1);
                     Log.v("musicUrl", musicUrl);
 
