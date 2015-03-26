@@ -138,13 +138,15 @@ public class MainActivity extends MaterialNavigationDrawer {
                 Log.v("Key",str);
                 MaterialSection section = getCurrentSection();
                 section.setTitle("搜索");
-                SearchResultFragment fragment = SearchResultFragment.newInstance(str);
-                fragmentTransaction.add(fragment,str);
+//                this.newSection("搜索",getFragmentInstance(Globles.BASE_URL + "search/" + str + "/"));
+                BaseFragment fragment = getFragmentInstance(Globles.BASE_URL + "search/" + str + "/");
+                fragmentTransaction.commit();
                 break;
             default:
         }
 
     }
+    
 
     private BaseFragment getFragmentInstance(String url){
         if(fragmentManager.findFragmentByTag(url)==null){
