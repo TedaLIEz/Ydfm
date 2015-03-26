@@ -120,6 +120,10 @@ public class BaseFragment extends Fragment{
         return url;
     }
 
+    public String getPageUrl(){
+        return this.url+String.valueOf(page)+"/";
+    }
+
     public void setUrl(String url) {
         this.url = url;
     }
@@ -127,7 +131,7 @@ public class BaseFragment extends Fragment{
     private void refresh(){
         AsyncHttpClient client = new AsyncHttpClient();
 
-        client.get(this.url + String.valueOf(page) + "/", new AsyncHttpResponseHandler() {
+        client.get(getPageUrl(), new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers,
                                   byte[] responseBody) {
@@ -190,11 +194,11 @@ public class BaseFragment extends Fragment{
 
 
 
+
     public void getData() {
         AsyncHttpClient client = new AsyncHttpClient();
         page = 1;
-        Log.v("url",this.url+String.valueOf(page)+"/");
-        client.get(this.url + String.valueOf(page) + "/", new AsyncHttpResponseHandler() {
+        client.get(getPageUrl(), new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers,
                                   byte[] responseBody) {

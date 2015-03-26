@@ -2,33 +2,21 @@ package com.hustascii.ydfm;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
-import android.provider.ContactsContract;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.hustascii.ydfm.activity.SearchActivity;
 import com.hustascii.ydfm.fragment.BaseFragment;
-import com.hustascii.ydfm.fragment.HomeFragment;
+import com.hustascii.ydfm.fragment.SearchResultFragment;
 import com.hustascii.ydfm.fragment.SettingFragment;
 import com.hustascii.ydfm.util.FontHelper;
 import com.hustascii.ydfm.util.Globles;
@@ -127,8 +115,8 @@ public class MainActivity extends MaterialNavigationDrawer {
         if(id==R.id.action_search){
             Intent intent=new Intent();
             intent.setClass(MainActivity.this, SearchActivity.class);
-            startActivity(intent);
-            overridePendingTransition(R.anim.abc_fade_in,R.anim.abc_fade_out);
+            startActivityForResult(intent, 1000);
+            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
         }
         //noinspection SimplifiableIfStatement
 
@@ -141,6 +129,22 @@ public class MainActivity extends MaterialNavigationDrawer {
         new BaseFragment();
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (resultCode){
+            case 10000:
+                Bundle b = data.getExtras();
+                String str = b.getString("key");
+                Log.v("Key",str);
+                MaterialSection section = getCurrentSection();
+                section.setTitle("搜索");
+                SearchResultFragment fragment = SearchResultFragment.newInstance(str);
+                fragmentTransaction.add(fragment,str);
+                break;
+            default:
+        }
+
+    }
 
     private BaseFragment getFragmentInstance(String url){
         if(fragmentManager.findFragmentByTag(url)==null){
