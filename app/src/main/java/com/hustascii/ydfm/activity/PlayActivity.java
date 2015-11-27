@@ -2,11 +2,8 @@ package com.hustascii.ydfm.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,25 +11,16 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Vibrator;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hustascii.ydfm.R;
-import com.hustascii.ydfm.beans.Item;
-import com.hustascii.ydfm.fragment.BaseFragment;
+import com.hustascii.ydfm.beans.MusicContent;
 import com.hustascii.ydfm.util.AnimateFirstDisplayListener;
 import com.hustascii.ydfm.util.Crawls;
 import com.hustascii.ydfm.util.Globles;
@@ -49,12 +37,9 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.apache.http.Header;
 
-import java.util.zip.Inflater;
-
 import at.markushi.ui.CircleButton;
 import de.hdodenhof.circleimageview.CircleImageView;
 import me.imid.swipebacklayout.lib.SwipeBackLayout;
-import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
 
 
 public class PlayActivity extends MySwipeBackActivity {
@@ -68,7 +53,7 @@ public class PlayActivity extends MySwipeBackActivity {
     private TextView statusBar;
     private Toolbar toolbar;
     private ActionBar actionBar;
-    private Item item;
+    private MusicContent musicContent;
     private Intent intent;
     private DiscreteSeekBar myBar;
     private CircleButton myBtn;
@@ -92,7 +77,7 @@ public class PlayActivity extends MySwipeBackActivity {
         setContentView(R.layout.activity_play);
         intent = getIntent();
         isLike=true;
-        item = (Item) intent.getSerializableExtra("map");
+        musicContent = (MusicContent) intent.getSerializableExtra("map");
         Log.i("build",""+Build.VERSION.SDK_INT);
         statusBar = (TextView) findViewById(R.id.statusBar);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -134,7 +119,7 @@ public class PlayActivity extends MySwipeBackActivity {
 
 
 
-        contentUrl = item.getContentUrl();
+        contentUrl = musicContent.getContentUrl();
         if (musicUrl == null || musicUrl.equals("")) {
             AsyncHttpClient client = new AsyncHttpClient();
             client.get(Globles.BASE_URL + contentUrl.substring(1), new AsyncHttpResponseHandler() {
@@ -210,12 +195,12 @@ public class PlayActivity extends MySwipeBackActivity {
         });
 
 
-        mTitle.setText(item.getTitle());
-        mAuthor.setText(item.getAuthor());
-        mSpeaker.setText(item.getSpeaker());
-        mTimer.setText(item.getTime());
-        mListen.setText(item.getListen());
-        contentUrl = item.getContentUrl();
+        mTitle.setText(musicContent.getTitle());
+        mAuthor.setText(musicContent.getAuthor());
+        mSpeaker.setText(musicContent.getSpeaker());
+        mTimer.setText(musicContent.getTime());
+        mListen.setText(musicContent.getListen());
+        contentUrl = musicContent.getContentUrl();
         this.mImageLoader = ImageLoader.getInstance();
         options = new DisplayImageOptions.Builder()
                 .showImageOnLoading(R.drawable.example_1) //设置图片在下载期间显示的图片
@@ -230,7 +215,7 @@ public class PlayActivity extends MySwipeBackActivity {
                 .displayer(new RoundedBitmapDisplayer(20))//是否设置为圆角，弧度为多少
                 .displayer(new FadeInBitmapDisplayer(100))//是否图片加载好后渐入的动画时间
                 .build();//构建完成
-        mImageLoader.displayImage(Globles.BASE_URL + item.getImgUrl().substring(1), mImg, options, new AnimateFirstDisplayListener());
+        mImageLoader.displayImage(Globles.BASE_URL + musicContent.getImgUrl().substring(1), mImg, options, new AnimateFirstDisplayListener());
 
         mSwipeBackLayout = getSwipeBackLayout();
         mSwipeBackLayout.setEdgeTrackingEnabled(SwipeBackLayout.EDGE_LEFT);
@@ -270,7 +255,7 @@ public class PlayActivity extends MySwipeBackActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
+        // Handle action bar musicContent clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
 

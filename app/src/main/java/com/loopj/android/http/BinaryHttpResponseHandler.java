@@ -29,8 +29,8 @@ import java.util.regex.Pattern;
 /**
  * Used to intercept and handle the responses from requests made using
  * {@link AsyncHttpClient}. Receives response body as byte array with a
- * content-type whitelist. (e.g. checks Content-Type against allowed list,
- * Content-length).
+ * content-type whitelist. (e.g. checks MusicContent-Type against allowed list,
+ * MusicContent-length).
  * <p>&nbsp;</p>
  * For example:
  * <p>&nbsp;</p>
@@ -133,10 +133,10 @@ public class BinaryHttpResponseHandler extends AsyncHttpResponseHandler {
     @Override
     protected void sendResponseMessage(HttpResponse response) throws IOException {
         StatusLine status = response.getStatusLine();
-        Header[] contentTypeHeaders = response.getHeaders("Content-Type");
+        Header[] contentTypeHeaders = response.getHeaders("MusicContent-Type");
         if (contentTypeHeaders.length != 1) {
             //malformed/ambiguous HTTP Header, ABORT!
-            sendFailureMessage(status.getStatusCode(), response.getAllHeaders(), null, new HttpResponseException(status.getStatusCode(), "None, or more than one, Content-Type Header found!"));
+            sendFailureMessage(status.getStatusCode(), response.getAllHeaders(), null, new HttpResponseException(status.getStatusCode(), "None, or more than one, MusicContent-Type Header found!"));
             return;
         }
         Header contentTypeHeader = contentTypeHeaders[0];
@@ -147,8 +147,8 @@ public class BinaryHttpResponseHandler extends AsyncHttpResponseHandler {
             }
         }
         if (!foundAllowedContentType) {
-            //Content-Type not in allowed list, ABORT!
-            sendFailureMessage(status.getStatusCode(), response.getAllHeaders(), null, new HttpResponseException(status.getStatusCode(), "Content-Type not allowed!"));
+            //MusicContent-Type not in allowed list, ABORT!
+            sendFailureMessage(status.getStatusCode(), response.getAllHeaders(), null, new HttpResponseException(status.getStatusCode(), "MusicContent-Type not allowed!"));
             return;
         }
         super.sendResponseMessage( response );

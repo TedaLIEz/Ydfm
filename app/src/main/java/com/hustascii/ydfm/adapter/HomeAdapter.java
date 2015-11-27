@@ -7,24 +7,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.hustascii.ydfm.R;
-import com.hustascii.ydfm.beans.Item;
+import com.hustascii.ydfm.beans.MusicContent;
 import com.hustascii.ydfm.util.AnimateFirstDisplayListener;
 import com.hustascii.ydfm.util.Globles;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
-import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by wei on 15-1-12.
@@ -32,7 +28,7 @@ import java.util.HashMap;
 public class HomeAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
-    private ArrayList<Item> mList;
+    private ArrayList<MusicContent> mList;
     private ImageLoader mImageLoader;
     private DisplayImageOptions options;
     private Context mContext;
@@ -41,7 +37,7 @@ public class HomeAdapter extends BaseAdapter {
     public void setFlagBusy(boolean busy){
         this.mBusy = busy;
     }
-    public HomeAdapter(Context context,ArrayList<Item> list){
+    public HomeAdapter(Context context,ArrayList<MusicContent> list){
         this.mInflater = LayoutInflater.from(context);
 //        this.mList = list;
         this.mList = list;
@@ -87,25 +83,26 @@ public class HomeAdapter extends BaseAdapter {
         }else{
             holder = (ViewHolder) view.getTag();
         }
-        final Item item = mList.get(i) ;
+        final MusicContent musicContent = mList.get(i) ;
         if(!mBusy){
-            Log.v("item.url", item.getImgUrl());
-            mImageLoader.displayImage(Globles.BASE_URL+item.getImgUrl().substring(1), holder.mImg, options,new AnimateFirstDisplayListener());
+            Log.v("musicContent.url", musicContent.getImgUrl());
+            mImageLoader.displayImage(Globles.BASE_URL+ musicContent.getImgUrl().substring(1), holder.mImg, options,new AnimateFirstDisplayListener());
         }else{
-            mImageLoader.displayImage(item.getImgUrl(), holder.mImg, options);
+            mImageLoader.displayImage(musicContent.getImgUrl(), holder.mImg, options);
 
         }
-        holder.mTitle.setText(item.getTitle());
-        holder.mAuthor.setText(item.getAuthor());
-        if(item.getSpeaker().length()>4){
-            holder.mSpeaker.setText(item.getSpeaker().substring(0,4)+"...");
+        holder.mTitle.setText(musicContent.getTitle());
+        holder.mAuthor.setText(musicContent.getAuthor());
+        if(musicContent.getSpeaker().length()>4){
+            holder.mSpeaker.setText(musicContent.getSpeaker().substring(0,4)+"...");
         }else{
-            holder.mSpeaker.setText(item.getSpeaker());
+            holder.mSpeaker.setText(musicContent.getSpeaker());
         }
-        holder.mListen.setText(item.getListen());
-        holder.mTimer.setText(item.getTime());
+        holder.mListen.setText(musicContent.getListen());
+        holder.mTimer.setText(musicContent.getTime());
 
         return view;
+
     }
 
     @Override
@@ -119,12 +116,14 @@ public class HomeAdapter extends BaseAdapter {
     }
 
 
-    public final class ViewHolder{
-        public TextView mTitle;
-        public ImageView mImg;
-        public TextView mAuthor;
-        public TextView mSpeaker;
-        public TextView mTimer;
-        public TextView mListen;
+    public class ViewHolder{
+        TextView mTitle;
+        TextView mAuthor;
+        TextView mSpeaker;
+        TextView mListen;
+        TextView mTimer;
+        ImageView mImg;
+
     }
+
 }

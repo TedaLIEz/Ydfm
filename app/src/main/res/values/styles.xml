@@ -3,52 +3,52 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="android:windowIsTranslucent">true</item>
+        <musicContent name="android:windowIsTranslucent">true</musicContent>
 
     </style>
     <style name="NavigationDrawer" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar.TranslucentKitKatStatusBar">
         <!-- Customize your theme here. -->
 
-        <item name="colorPrimary">#F36B63</item>
-        <item name="colorPrimaryDark">#F36B63</item>
-        <item name="colorAccent">#FFFFFF</item>
+        <musicContent name="colorPrimary">#F36B63</musicContent>
+        <musicContent name="colorPrimaryDark">#F36B63</musicContent>
+        <musicContent name="colorAccent">#FFFFFF</musicContent>
     </style>
 
     <style name="ImageHeaderTheme" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar">
         <!-- Customize your theme here. -->
 
-        <item name="colorPrimary">#F36B63</item>
-        <item name="colorPrimaryDark">#F36B63</item>
-        <item name="colorAccent">#FFFFFF</item>
-        <item name="drawerType">@integer/DRAWERTYPE_IMAGE</item>
+        <musicContent name="colorPrimary">#F36B63</musicContent>
+        <musicContent name="colorPrimaryDark">#F36B63</musicContent>
+        <musicContent name="colorAccent">#FFFFFF</musicContent>
+        <musicContent name="drawerType">@integer/DRAWERTYPE_IMAGE</musicContent>
     </style>
 
     <style name="ImageHeaderThemeTranslucent" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar">
         <!-- Customize your theme here. -->
-        <item name="android:windowIsTranslucent">true</item>
+        <musicContent name="android:windowIsTranslucent">true</musicContent>
 
-        <item name="colorPrimary">#F36B63</item>
-        <item name="colorPrimaryDark">#F36B63</item>
-        <item name="colorAccent">#FFFFFF</item>
-        <item name="drawerType">@integer/DRAWERTYPE_IMAGE</item>
+        <musicContent name="colorPrimary">#F36B63</musicContent>
+        <musicContent name="colorPrimaryDark">#F36B63</musicContent>
+        <musicContent name="colorAccent">#FFFFFF</musicContent>
+        <musicContent name="drawerType">@integer/DRAWERTYPE_IMAGE</musicContent>
 
     </style>
 
     <style name="CustomHeader" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar.TranslucentKitKatStatusBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">#F36B63</item>
-        <item name="colorPrimaryDark">#F36B63</item>
-        <item name="colorAccent">#FFFFFF</item>
-        <item name="drawerType">@integer/DRAWERTYPE_CUSTOM</item>
+        <musicContent name="colorPrimary">#F36B63</musicContent>
+        <musicContent name="colorPrimaryDark">#F36B63</musicContent>
+        <musicContent name="colorAccent">#FFFFFF</musicContent>
+        <musicContent name="drawerType">@integer/DRAWERTYPE_CUSTOM</musicContent>
     </style>
 
     <style name="CustomHeaderTranslucent" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar.TranslucentKitKatStatusBar">
         <!-- Customize your theme here. -->
-        <item name="android:windowIsTranslucent">true</item>
-        <item name="colorPrimary">#F36B63</item>
-        <item name="colorPrimaryDark">#F36B63</item>
-        <item name="colorAccent">#FFFFFF</item>
-        <item name="drawerType">@integer/DRAWERTYPE_CUSTOM</item>
+        <musicContent name="android:windowIsTranslucent">true</musicContent>
+        <musicContent name="colorPrimary">#F36B63</musicContent>
+        <musicContent name="colorPrimaryDark">#F36B63</musicContent>
+        <musicContent name="colorAccent">#FFFFFF</musicContent>
+        <musicContent name="drawerType">@integer/DRAWERTYPE_CUSTOM</musicContent>
     </style>
 
 </resources>

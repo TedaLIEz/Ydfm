@@ -1,6 +1,6 @@
 package com.hustascii.ydfm.util;
 
-import com.hustascii.ydfm.beans.Item;
+import com.hustascii.ydfm.beans.MusicContent;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  * Created by wei on 15-1-16.
  */
 public class Crawls {
-    public static ArrayList<Item> getListInfo(String responseBody) {
+    public static ArrayList<MusicContent> getListInfo(String responseBody) {
 
         return null;
     }

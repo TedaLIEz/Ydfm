@@ -2,10 +2,14 @@ package com.hustascii.ydfm;
 
 import android.app.Application;
 
+import com.avos.avoscloud.AVObject;
+import com.hustascii.ydfm.beans.MusicContent;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.avos.avoscloud.AVOSCloud;
+import com.avos.avoscloud.AVAnalytics;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
@@ -33,6 +37,8 @@ public class MyApp extends Application {
         //Initialize ImageLoader with configuration
         ImageLoader.getInstance().init(config);
 
-        CalligraphyConfig.initDefault("fonts/custom.TTF", R.attr.fontPath);
+        AVObject.registerSubclass(MusicContent.class);
+        AVOSCloud.initialize(this, "tISXRXiqDs321Tax16GnVFNS", "Lg8G6xASb8OSUyqlQFNY93Gk");
+//        CalligraphyConfig.initDefault("fonts/custom.TTF", R.attr.fontPath);
     }
 }

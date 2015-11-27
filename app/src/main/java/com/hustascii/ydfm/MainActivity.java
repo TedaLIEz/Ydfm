@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.avos.avoscloud.AVAnalytics;
 import com.hustascii.ydfm.activity.SearchActivity;
 import com.hustascii.ydfm.fragment.BaseFragment;
 import com.hustascii.ydfm.fragment.SearchResultFragment;
@@ -42,6 +43,8 @@ public class MainActivity extends MaterialNavigationDrawer {
     private static Boolean isExit = false;
     @Override
     public void init(Bundle savedInstanceState) {
+
+        AVAnalytics.trackAppOpened(getIntent());
 
 
         View view = LayoutInflater.from(this).inflate(R.layout.custom_drawer,null);

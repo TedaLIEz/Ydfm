@@ -7,7 +7,7 @@
 
     <!-- Framelayout per la visualizzazione -->
     <RelativeLayout
-        android:id="@+id/content"
+        android:id="@+id/musicContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 

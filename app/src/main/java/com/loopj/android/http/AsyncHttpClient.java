@@ -854,7 +854,7 @@ public class AsyncHttpClient {
      */
     protected RequestHandle sendRequest(DefaultHttpClient client, HttpContext httpContext, HttpUriRequest uriRequest, String contentType, AsyncHttpResponseHandler responseHandler, Context context) {
         if (contentType != null) {
-            uriRequest.addHeader("Content-Type", contentType);
+            uriRequest.addHeader("MusicContent-Type", contentType);
         }
 
         Future<?> request = threadPool.submit(new AsyncHttpRequest(client, httpContext, uriRequest, responseHandler));
