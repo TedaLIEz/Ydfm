@@ -60,7 +60,7 @@ public class SyncHttpClient extends AsyncHttpClient {
                                String contentType, AsyncHttpResponseHandler responseHandler,
                                Context context) {
         if (contentType != null) {
-            uriRequest.addHeader("MusicContent-Type", contentType);
+            uriRequest.addHeader("Item-Type", contentType);
         }
 
         responseHandler.setUseSynchronousMode(true);

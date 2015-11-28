@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.hustascii.ydfm.R;
 import com.hustascii.ydfm.beans.MusicContent;
+import com.hustascii.ydfm.beans.MusicContentLite;
 import com.hustascii.ydfm.util.AnimateFirstDisplayListener;
 import com.hustascii.ydfm.util.Globles;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -28,7 +29,7 @@ import java.util.ArrayList;
 public class HomeAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
-    private ArrayList<MusicContent> mList;
+    private ArrayList<MusicContentLite> mList;
     private ImageLoader mImageLoader;
     private DisplayImageOptions options;
     private Context mContext;
@@ -37,7 +38,8 @@ public class HomeAdapter extends BaseAdapter {
     public void setFlagBusy(boolean busy){
         this.mBusy = busy;
     }
-    public HomeAdapter(Context context,ArrayList<MusicContent> list){
+
+    public HomeAdapter(Context context, ArrayList<MusicContentLite> list) {
         this.mInflater = LayoutInflater.from(context);
 //        this.mList = list;
         this.mList = list;
@@ -83,7 +85,7 @@ public class HomeAdapter extends BaseAdapter {
         }else{
             holder = (ViewHolder) view.getTag();
         }
-        final MusicContent musicContent = mList.get(i) ;
+        final MusicContentLite musicContent = mList.get(i);
         if(!mBusy){
             Log.v("musicContent.url", musicContent.getImgUrl());
             mImageLoader.displayImage(Globles.BASE_URL+ musicContent.getImgUrl().substring(1), holder.mImg, options,new AnimateFirstDisplayListener());

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- A 'parent' preference, which enables/disables child preferences (below)
+         when checked/unchecked. -->
+    <com.hustascii.ydfm.view.MyPreferenceCategory android:title="基本设置">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="notifications_new_message"
+            android:shadowColor="@color/abc_input_method_navigation_guard"
+            android:title="@string/pref_notice_wifi" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="notifications_new_message"
+            android:title="@string/pref_auto_wifi" />
+
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="notifications_new_message"
+            android:title="@string/pref_allow_message" />
+
+        <Preference
+            android:title="@string/pref_clear_mem"
+            android:key="@string/pref_clear_mem"></Preference>
+
+
+    </com.hustascii.ydfm.view.MyPreferenceCategory>
+
+    <com.hustascii.ydfm.view.MyPreferenceCategory android:title="关于应用">
+        <Preference
+            android:title="@string/pref_fallback"
+            android:key="@string/pref_fallback"></Preference>
+        <Preference
+            android:title="@string/pref_check_version"
+            android:key="@string/pref_check_version"></Preference>
+        <Preference
+            android:title="@string/pref_about_us"
+            android:key="@string/pref_about_us"></Preference>
+
+    </com.hustascii.ydfm.view.MyPreferenceCategory>
+
+
+    <!-- Allows the user to choose a ringtone in the 'notification' category. -->
+    <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
+    <!-- NOTE: RingtonePreference's summary should be set to its value by the activity code. -->
+    <!--<RingtonePreference-->
+    <!--android:dependency="notifications_new_message"-->
+    <!--android:key="notifications_new_message_ringtone"-->
+    <!--android:title="@string/pref_title_ringtone"-->
+    <!--android:ringtoneType="notification"-->
+    <!--android:defaultValue="content://settings/system/notification_sound" />-->
+
+    <!-- NOTE: This preference will be enabled only when the checkbox above is checked. -->
+    <!--<SwitchPreference-->
+    <!--android:dependency="notifications_new_message"-->
+    <!--android:key="notifications_new_message_vibrate"-->
+    <!--android:title="@string/pref_title_vibrate"-->
+    <!--android:defaultValue="true" />-->
+
+</PreferenceScreen>

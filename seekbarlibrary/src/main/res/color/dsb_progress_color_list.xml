@@ -16,6 +16,6 @@
   -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <musicContent android:color="@color/dsb_disabled_color" android:state_enabled="false"/>
-    <musicContent android:color="@color/dsb_progress_color"/>
+  <item android:color="@color/dsb_disabled_color" android:state_enabled="false" />
+  <item android:color="@color/dsb_progress_color" />
 </selector>

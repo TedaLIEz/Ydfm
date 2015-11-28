@@ -22,18 +22,18 @@
     <color name="dsb_ripple_color_focused">#99999999</color>
 
     <style name="DefaultSeekBar" parent="android:Widget">
-        <musicContent name="dsb_indicatorTextAppearance">@style/DefaultIndicatorTextAppearance</musicContent>
-        <musicContent name="dsb_progressColor">@color/dsb_progress_color_list</musicContent>
-        <musicContent name="dsb_trackColor">@color/dsb_track_color_list</musicContent>
-        <musicContent name="dsb_rippleColor">@color/dsb_ripple_color_list</musicContent>
-        <musicContent name="dsb_indicatorColor">@color/dsb_progress_color</musicContent>
-        <musicContent name="dsb_indicatorElevation">4dp</musicContent>
-        <musicContent name="dsb_mirrorForRtl">true</musicContent>
+        <item name="dsb_indicatorTextAppearance">@style/DefaultIndicatorTextAppearance</item>
+        <item name="dsb_progressColor">@color/dsb_progress_color_list</item>
+        <item name="dsb_trackColor">@color/dsb_track_color_list</item>
+        <item name="dsb_rippleColor">@color/dsb_ripple_color_list</item>
+        <item name="dsb_indicatorColor">@color/dsb_progress_color</item>
+        <item name="dsb_indicatorElevation">4dp</item>
+        <item name="dsb_mirrorForRtl">true</item>
     </style>
 
     <style name="DefaultIndicatorTextAppearance" parent="android:TextAppearance.Small">
-        <musicContent name="android:textColor">?android:attr/textColorPrimaryInverse</musicContent>
-        <musicContent name="android:padding">6dp</musicContent>
+        <item name="android:textColor">?android:attr/textColorPrimaryInverse</item>
+        <item name="android:padding">6dp</item>
     </style>
 
 </resources>

@@ -45,8 +45,10 @@
             android:label="@string/title_activity_search"
             android:theme="@style/CustomHeaderTranslucent">
         </activity>
+        <activity android:name="com.avos.avoscloud.feedback.ThreadActivity"></activity>
         <activity
-            android:name="com.avos.avoscloud.feedback.ThreadActivity" >
+            android:name=".activity.SettingsActivity"
+            android:label="@string/title_activity_settings">
         </activity>
     </application>
 

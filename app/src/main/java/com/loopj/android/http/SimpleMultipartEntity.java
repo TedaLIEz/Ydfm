@@ -48,7 +48,7 @@ class SimpleMultipartEntity implements HttpEntity {
 
     private static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
     private static final byte[] CR_LF = ("\r\n").getBytes();
-    private static final byte[] TRANSFER_ENCODING_BINARY = "MusicContent-Transfer-Encoding: binary\r\n"
+    private static final byte[] TRANSFER_ENCODING_BINARY = "Item-Transfer-Encoding: binary\r\n"
             .getBytes();
 
     private final static char[] MULTIPART_CHARS = "-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
@@ -143,17 +143,17 @@ class SimpleMultipartEntity implements HttpEntity {
     }
 
     private byte[] createContentType(String type) {
-        String result = "MusicContent-Type: " + type + "\r\n";
+        String result = "Item-Type: " + type + "\r\n";
         return result.getBytes();
     }
 
     private byte[] createContentDisposition(final String key) {
-        return ("MusicContent-Disposition: form-data; name=\"" + key + "\"\r\n")
+        return ("Item-Disposition: form-data; name=\"" + key + "\"\r\n")
                 .getBytes();
     }
 
     private byte[] createContentDisposition(final String key, final String fileName) {
-        return ("MusicContent-Disposition: form-data; name=\"" + key + "\"; filename=\"" + fileName + "\"\r\n")
+        return ("Item-Disposition: form-data; name=\"" + key + "\"; filename=\"" + fileName + "\"\r\n")
                 .getBytes();
     }
 
@@ -234,7 +234,7 @@ class SimpleMultipartEntity implements HttpEntity {
 
     @Override
     public Header getContentType() {
-        return new BasicHeader("MusicContent-Type", "multipart/form-data; boundary=" + boundary);
+        return new BasicHeader("Item-Type", "multipart/form-data; boundary=" + boundary);
     }
 
     @Override

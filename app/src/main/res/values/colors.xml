@@ -4,4 +4,5 @@
     <color name="SearchColor">#ffffff</color>
     <color name="clickGrey">#d0d0d0</color>
     <color name="bg">#F3F3F3</color>
+    <color name="pref_text_color">#00a1ff</color>
 </resources>
