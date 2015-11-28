@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.hustascii.ydfm.R;
 import com.hustascii.ydfm.beans.MusicContent;
+import com.hustascii.ydfm.beans.MusicContentLite;
 import com.hustascii.ydfm.util.AnimateFirstDisplayListener;
 import com.hustascii.ydfm.util.Crawls;
 import com.hustascii.ydfm.util.Globles;
@@ -53,7 +54,7 @@ public class PlayActivity extends MySwipeBackActivity {
     private TextView statusBar;
     private Toolbar toolbar;
     private ActionBar actionBar;
-    private MusicContent musicContent;
+    private MusicContentLite musicContent;
     private Intent intent;
     private DiscreteSeekBar myBar;
     private CircleButton myBtn;
@@ -77,7 +78,7 @@ public class PlayActivity extends MySwipeBackActivity {
         setContentView(R.layout.activity_play);
         intent = getIntent();
         isLike=true;
-        musicContent = (MusicContent) intent.getSerializableExtra("map");
+        musicContent = (MusicContentLite) intent.getSerializableExtra("map");
         Log.i("build",""+Build.VERSION.SDK_INT);
         statusBar = (TextView) findViewById(R.id.statusBar);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
