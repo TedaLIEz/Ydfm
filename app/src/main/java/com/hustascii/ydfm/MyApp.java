@@ -17,9 +17,19 @@ import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
  * Created by wei on 15-1-13.
  */
 public class MyApp extends Application {
+
+    private static MyApp mContext;
+
+
+    public static MyApp getContext() {
+        return mContext;
+    }
+
+
     @Override
     public void onCreate() {
         super.onCreate();
+        mContext = this;
 
         // This configuration tuning is custom. You can tune every option, you may tune some of them,
         // or you can create default configuration by
@@ -41,4 +51,7 @@ public class MyApp extends Application {
         AVOSCloud.initialize(this, "tISXRXiqDs321Tax16GnVFNS", "Lg8G6xASb8OSUyqlQFNY93Gk");
 //        CalligraphyConfig.initDefault("fonts/custom.TTF", R.attr.fontPath);
     }
+
+
+
 }

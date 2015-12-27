@@ -5,6 +5,41 @@
 
     android:background="#F3F3F3"
     tools:context=".MainActivity">
+
+
+    <LinearLayout
+        android:id="@+id/load_failed_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/img_load_flg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="115dp"
+            android:src="@drawable/online_load_failed"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:id="@+id/tv_tip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:textColor="#727272" />
+
+        <Button
+            android:id="@+id/btn_retry"
+            android:layout_width="115dp"
+            android:layout_height="40dp"
+            android:text="@string/online_retry_btn"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@color/textColor"
+            android:background="@drawable/retry_btn_background" />
+    </LinearLayout>
+
     <com.hustascii.ydfm.view.RefreshLayout
         android:id="@+id/swipe_refresh"
         android:layout_width="match_parent"

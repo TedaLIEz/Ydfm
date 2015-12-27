@@ -83,4 +83,13 @@
     <string name="pref_fallback">向作者吐槽</string>
     <string name="pref_about_us">关于我们</string>
 
+    <string name="online_retry_btn">重新加载</string>
+    <string name="network_loading">加载中...</string>
+
+    <string name="no_network_connected_toast">没有可连接的网络</string>
+    <string name="load_failed">加载失败，请检查网络设置</string>
+    <string name="refresh_failed">刷新失败，请检查网络设置</string>
+
+
+
 </resources>

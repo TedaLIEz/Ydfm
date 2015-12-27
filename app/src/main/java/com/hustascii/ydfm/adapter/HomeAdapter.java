@@ -22,6 +22,8 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by wei on 15-1-12.
@@ -29,7 +31,7 @@ import java.util.ArrayList;
 public class HomeAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
-    private ArrayList<MusicContentLite> mList;
+    private List<MusicContentLite> mList;
     private ImageLoader mImageLoader;
     private DisplayImageOptions options;
     private Context mContext;
@@ -39,7 +41,7 @@ public class HomeAdapter extends BaseAdapter {
         this.mBusy = busy;
     }
 
-    public HomeAdapter(Context context, ArrayList<MusicContentLite> list) {
+    public HomeAdapter(Context context, List<MusicContentLite> list) {
         this.mInflater = LayoutInflater.from(context);
 //        this.mList = list;
         this.mList = list;

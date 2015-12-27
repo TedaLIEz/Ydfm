@@ -21,6 +21,7 @@ import com.hustascii.ydfm.fragment.SearchResultFragment;
 import com.hustascii.ydfm.fragment.SettingFragment;
 import com.hustascii.ydfm.util.FontHelper;
 import com.hustascii.ydfm.util.Globles;
+import com.umeng.update.UmengUpdateAgent;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -45,7 +46,8 @@ public class MainActivity extends MaterialNavigationDrawer {
     public void init(Bundle savedInstanceState) {
 
         AVAnalytics.trackAppOpened(getIntent());
-
+        UmengUpdateAgent.setUpdateOnlyWifi(false);
+        UmengUpdateAgent.update(this);
 
         View view = LayoutInflater.from(this).inflate(R.layout.custom_drawer,null);
         setDrawerHeaderCustom(view);
