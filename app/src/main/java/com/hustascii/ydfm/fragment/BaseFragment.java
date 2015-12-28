@@ -36,6 +36,7 @@ import com.hustascii.ydfm.adapter.HomeAdapter;
 import com.hustascii.ydfm.beans.MusicContent;
 import com.hustascii.ydfm.beans.MusicContentLite;
 import com.hustascii.ydfm.util.FileUtils;
+import com.hustascii.ydfm.util.Globles;
 import com.hustascii.ydfm.util.NetWorkUtils;
 import com.hustascii.ydfm.view.RefreshLayout;
 import com.loopj.android.http.AsyncHttpClient;
@@ -58,8 +59,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-public class BaseFragment extends Fragment{
-
+public class BaseFragment extends Fragment {
+    //TODO: Add Init View when first load data
     protected final static String CACHE_FILE_NAME = "content_json";
     private RefreshLayout swipeLayout;
     private ListView mListView;
@@ -67,7 +68,6 @@ public class BaseFragment extends Fragment{
     private List<MusicContentLite> mList;
     private String url;
     private int channel;
-    private ProgressDialog pd;
     private ImageLoader mImageLoader;
     private int page;
     protected String mTimeStamp;
@@ -80,8 +80,9 @@ public class BaseFragment extends Fragment{
     protected Button mTryAgainBtn;
     protected SharedPreferences mPrefs;
     protected Resources mRes;
-    protected boolean mIsFirstLoaded;//true 则执行第一次加载时的操作，false则执行刷新时的操作
+    protected boolean mIsFirstLoaded = true;    //true 则执行第一次加载时的操作，false则执行刷新时的操作
     protected String mCacheJsonString;
+    private State mCurrentState = State.STATE_INIT;
 
     /**
      * *
@@ -92,7 +93,13 @@ public class BaseFragment extends Fragment{
     protected boolean mHasLoadedUI = false;//不管以何种方式得到数据，成功的加载UI标记，避免重复开启读缓存和网络请求的任务
 
     private int num_page = 20;
-//    private Snackbar snackbar;
+
+    //    private Snackbar snackbar;
+
+    enum State {
+        STATE_INIT, STATE_OK, STATE_REFRESH_FAILED, STATE_UNKNOWN
+    }
+
     public BaseFragment() {
 
     }
@@ -103,25 +110,27 @@ public class BaseFragment extends Fragment{
         super.onCreate(savedInstanceState);
         page = 1;
         mCacheFileName = CACHE_FILE_NAME;
-        pd = new ProgressDialog(this.getActivity());
-        pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        pd.setMessage("加载中...");
-        pd.setCanceledOnTouchOutside(false);
-        pd.show();
-        getData();
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        bar=getActivity().getActionBar();
-        View view = inflater.inflate(R.layout.activity_main, null, false);
+        bar = getActivity().getActionBar();
+        View view = inflater.inflate(R.layout.activity_main, container, false);
         mRes = getActivity().getResources();
         mLoadFailedTipContainer = (LinearLayout) view.findViewById(R.id.load_failed_container);
-        toolbar=(Toolbar)view.findViewById(R.id.toolbar);
+
+        mTv = (TextView) view.findViewById(R.id.tv_tip);
+        mLoadingFlgImg = (ImageView) view.findViewById(R.id.img_load_flg);
+        mTryAgainBtn = (Button) view.findViewById(R.id.btn_retry);
+
+        toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         mListView = (ListView) view.findViewById(R.id.infolist);
         swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_refresh);
+
+
         mImageLoader = ImageLoader.getInstance();
         mListView.setOnScrollListener(new PauseOnScrollListener(mImageLoader, false, false));
         swipeLayout.setColorScheme(android.R.color.holo_red_light, android.R.color.holo_green_light,
@@ -130,8 +139,10 @@ public class BaseFragment extends Fragment{
             @Override
             public void onRefresh() {
                 getData();
+
             }
         });
+
         swipeLayout.setOnLoadListener(new RefreshLayout.OnLoadListener() {
 
             @Override
@@ -139,21 +150,76 @@ public class BaseFragment extends Fragment{
                 loadMore();
             }
         });
-        setView();
+
+        mTryAgainBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getData();
+                showByState(State.STATE_INIT);
+            }
+        });
+        setListView();
         return view;
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getData();
+
+    }
+
+    private void showByState(State state) {
+        mCurrentState = state;
+        if (mCurrentState == State.STATE_REFRESH_FAILED) {
+            onRefreshLoadFailed();
+        } else if (mCurrentState == State.STATE_OK) {
+            onLoadSuccess();
+        } else if (mCurrentState == State.STATE_INIT) {
+            showRefreshAnim();
+        }
+    }
+
+    //call when data load.
+    private void showRefreshAnim() {
+        Logger.d("anim called");
+        if (swipeLayout.getVisibility() != View.VISIBLE) {
+            swipeLayout.setVisibility(View.VISIBLE);
+        }
+        if (mLoadFailedTipContainer.getVisibility() != View.GONE) {
+            mLoadFailedTipContainer.setVisibility(View.GONE);
+        }
+        swipeLayout.setRefreshing(true);
+        swipeLayout.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                swipeLayout.setRefreshing(false);
+            }
+        }, 2500);
+    }
+
+    // call when data load success
+    private void onLoadSuccess() {
+        if (swipeLayout == null) {
+            return;
+        }
+        mTryAgainBtn.setVisibility(View.GONE);
+        swipeLayout.setVisibility(View.VISIBLE);
+        swipeLayout.setRefreshing(false);
+        mLoadingFlgImg.setVisibility(View.GONE);
+        mTv.setVisibility(View.GONE);
+    }
 
 
     public String getUrl() {
         return url;
     }
 
-    public String getPageUrl(){
-        return this.url+String.valueOf(page)+"/";
+    public String getPageUrl() {
+        return this.url + String.valueOf(page) + "/";
     }
 
-    public int getChannel(){
+    public int getChannel() {
         return channel;
     }
 
@@ -166,18 +232,21 @@ public class BaseFragment extends Fragment{
     public void onResume() {
         if (mListView.getAdapter() == null || mListView.getAdapter().isEmpty())
             mListView.setAdapter(homeAdapter);
+        mCurrentState = State.STATE_INIT;
         super.onResume();
     }
 
-    private void setView(){
-        mList = new LinkedList<MusicContentLite>();
-        homeAdapter = new HomeAdapter(getActivity(),mList);
+    // init listView with adapter
+    private void setListView() {
+        mList = new LinkedList<>();
+        homeAdapter = new HomeAdapter(getActivity(), mList);
         mListView.setAdapter(homeAdapter);
-
+        //TODO: musicContent is null
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 MusicContentLite musicContent = mList.get(i);
+                Logger.d("music content" + musicContent);
                 Intent intent = new Intent(getActivity(), PlayActivity.class);
                 intent.putExtra("map", musicContent);
                 startActivity(intent);
@@ -189,40 +258,63 @@ public class BaseFragment extends Fragment{
 
     }
 
-
+    /**
+     * Get data in page 1
+     *
+     **/
     public void getData() {
+//        showRefreshAnim();
+
         AsyncHttpClient client = new AsyncHttpClient();
         page = 1;
         client.get(getPageUrl(), new AsyncHttpResponseHandler() {
             @Override
+            public void onStart() {
+                super.onStart();
+                showRefreshAnim();
+            }
+
+            @Override
+            public void onProgress(int bytesWritten, int totalSize) {
+                super.onProgress(bytesWritten, totalSize);
+                showRefreshAnim();
+            }
+
+            @Override
             public void onSuccess(int statusCode, Header[] headers,
                                   byte[] responseBody) {
-                try {
-                    if (statusCode == 200) {
-                        mList.clear();
-                        mList.addAll(parseDoc(new String(responseBody)));
-                        pd.dismiss();
-                        homeAdapter.notifyDataSetChanged();
+                if (statusCode == 200) {
+                    mList.clear();
+                    mList.addAll(parseDoc(new String(responseBody)));
+                    homeAdapter.notifyDataSetChanged();
+//                    showRefreshAnim();
+                } else {
+                    Toast.makeText(getActivity(),
+                            "网络访问异常，错误码：" + statusCode, Toast.LENGTH_SHORT).show();
+                    if (!mIsFirstLoaded) {
+                        showByState(State.STATE_REFRESH_FAILED);
                     } else {
-                        Toast.makeText(getActivity(),
-                                "网络访问异常，错误码：" + statusCode, Toast.LENGTH_SHORT).show();
+                        swipeLayout.setRefreshing(false);
                     }
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+
                 }
             }
+
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 Logger.d(getPageUrl());
                 Toast.makeText(getActivity(),
                         "网络访问异常，错误码：" + statusCode, Toast.LENGTH_SHORT).show();
-                pd.dismiss();
+                if (!mIsFirstLoaded) {
+                    showByState(State.STATE_REFRESH_FAILED);
+                } else {
+                    swipeLayout.setRefreshing(false);
+                }
 
             }
         });
-
+        mIsFirstLoaded = false;
 
     }
 
@@ -233,19 +325,16 @@ public class BaseFragment extends Fragment{
             @Override
             public void onSuccess(int statusCode, Header[] headers,
                                   byte[] responseBody) {
-                try {
-                    if (statusCode == 200) {
-                        mList.addAll(parseDoc(new String(responseBody)));
-                        pd.dismiss();
-                        swipeLayout.setLoading(false);
-                        homeAdapter.notifyDataSetChanged();
-                    } else {
-                        Toast.makeText(getActivity(),
-                                "网络访问异常，错误码：" + statusCode, Toast.LENGTH_SHORT).show();
-                    }
-                } catch (Exception e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+
+                if (statusCode == 200) {
+                    mList.addAll(parseDoc(new String(responseBody)));
+                    swipeLayout.setLoading(false);
+                    homeAdapter.notifyDataSetChanged();
+                    showByState(State.STATE_OK);
+
+                } else {
+                    Toast.makeText(getActivity(),
+                            "网络访问异常，错误码：" + statusCode, Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -253,33 +342,28 @@ public class BaseFragment extends Fragment{
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                pd.dismiss();
                 if (mIsFirstLoaded) {
-                    onLoadFailed();//加载失败
                     mHasLoadedUI = false;
-                } else {
-                    onRefreshLoadFailed();//刷新失败
                 }
             }
         });
     }
 
+    //show reload UI when refresh failed.
     private void onRefreshLoadFailed() {
-        if(swipeLayout == null)
+        if (swipeLayout == null)
             return;
-        //todo update faild UI
-//        mPullToRefreshGridView.onRefreshComplete();//加载失败时，
-//        dismissPullRefreshLoadingUIIfNeeded();
-        swipeLayout.setRefreshing(false);
-        swipeLayout.setVisibility(View.VISIBLE);
-        mLoadFailedTipContainer.setVisibility(View.GONE);
+        //TODO: update failed UI
+        swipeLayout.setVisibility(View.GONE);
+        mLoadFailedTipContainer.setVisibility(View.VISIBLE);
         Toast.makeText(getActivity(), mRes.getString(R.string.refresh_failed), Toast.LENGTH_SHORT).show();
     }
 
+    //TODO: What the f**k r this?
+
     private void onLoadFailed() {
-        if(swipeLayout == null)
+        if (swipeLayout == null)
             return;
-        swipeLayout.setRefreshing(false);
         swipeLayout.setVisibility(View.GONE);
         mLoadFailedTipContainer.setVisibility(View.VISIBLE);
         mTv.setText(mRes.getString(R.string.load_failed));
@@ -287,7 +371,7 @@ public class BaseFragment extends Fragment{
         mTryAgainBtn.setVisibility(View.VISIBLE);
     }
 
-    public ArrayList<MusicContentLite> parseDoc(String doc){
+    public ArrayList<MusicContentLite> parseDoc(String doc) {
         ArrayList<MusicContentLite> list = new ArrayList<>();
         Document document = Jsoup.parse(doc);
         Elements authors = document.select("div.channel-meta").select("span:has(i.fa-pencil)");
@@ -303,7 +387,6 @@ public class BaseFragment extends Fragment{
         }
         return list;
     }
-
 
 
     private class ReadCacheTask extends AsyncTask<Void, Void, Void> {
@@ -328,7 +411,7 @@ public class BaseFragment extends Fragment{
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            if(swipeLayout == null)
+            if (swipeLayout == null)
                 return;
             //拿到Json，开始走UI层操作
             if (!NetWorkUtils.isNetworkConnected(getActivity())) {//未联网时先读取文件缓存,如果缓存中没有数据，则提示联网
@@ -378,9 +461,9 @@ public class BaseFragment extends Fragment{
             return;
         }
         if (homeAdapter != null) {
-            pd.dismiss();
+//            pd.dismiss();
 
-            switch (command){
+            switch (command) {
                 case 0:
                 case 1:
                     mList.clear();
@@ -408,10 +491,8 @@ public class BaseFragment extends Fragment{
     }
 
 
-
-
     private void onNetWorkUnConnectedWithNoFileCache() {
-        if(swipeLayout == null)
+        if (swipeLayout == null)
             return;
         swipeLayout.setVisibility(View.GONE);
         mLoadFailedTipContainer.setVisibility(View.VISIBLE);
@@ -426,7 +507,6 @@ public class BaseFragment extends Fragment{
     }
 
 
-
     private String getTimeStampFromJson(String json) {
         if (!TextUtils.isEmpty(json)) {
             try {
@@ -434,11 +514,11 @@ public class BaseFragment extends Fragment{
                 String timeStamp = jsonObject.optString("timeStamp");
                 //new interface add timeStamp in data body while odd interface
                 //put it outside
-                if (TextUtils.isEmpty(timeStamp)){
-                    JSONObject jsonObject1 =jsonObject.optJSONObject("data");
-                    if (jsonObject1!=null){
+                if (TextUtils.isEmpty(timeStamp)) {
+                    JSONObject jsonObject1 = jsonObject.optJSONObject("data");
+                    if (jsonObject1 != null) {
 
-                        timeStamp=jsonObject1.optString("timeStamp");
+                        timeStamp = jsonObject1.optString("timeStamp");
                     }
                 }
                 return timeStamp;
@@ -476,7 +556,7 @@ public class BaseFragment extends Fragment{
     }
 
     protected void onStartLoading() {//第一次加载时的回调
-        if(swipeLayout == null)
+        if (swipeLayout == null)
             return;
         swipeLayout.setVisibility(View.GONE);
         mLoadFailedTipContainer.setVisibility(View.VISIBLE);
@@ -526,10 +606,6 @@ public class BaseFragment extends Fragment{
 //            }
 //        });
 //    }
-
-
-
-
 
 
 }

@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.avos.avoscloud.AVObject;
 import com.hustascii.ydfm.beans.MusicContent;
+import com.hustascii.ydfm.util.Globles;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -30,7 +31,7 @@ public class MyApp extends Application {
     public void onCreate() {
         super.onCreate();
         mContext = this;
-
+        Globles.DEBUG = true;
         // This configuration tuning is custom. You can tune every option, you may tune some of them,
         // or you can create default configuration by
         //  ImageLoaderConfiguration.createDefault(this);

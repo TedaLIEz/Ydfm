@@ -9,7 +9,8 @@ import java.lang.reflect.Field;
  * Created by wei on 15-1-14.
  */
 public class Globles {
-
+    public static boolean DEBUG = false;
+    public static final String TAG = "Ydfm";
     public static final int NETWORK_STATE_IDLE = -1;
     public static final int NETWORK_STATE_WIFI = 1;
     public static final int NETWORK_STATE_CMNET = 2;
