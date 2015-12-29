@@ -19,6 +19,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -70,7 +71,7 @@ public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivi
     private static final String STATE_SECTION = "section";
     private static final String STATE_ACCOUNT = "account";
 
-    private MaterialDrawerLayout layout;
+    protected MaterialDrawerLayout layout;
     private ActionBar actionBar;
     private ActionBarDrawerToggle pulsante;
     private ImageView statusBar;
@@ -113,7 +114,6 @@ public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivi
 
         @Override
         public void onClick(View v) {
-
             if(!drawerTouchLocked) {
                 // enter into account properties
                 if (accountListener != null) {
@@ -462,7 +462,7 @@ public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivi
 
         // learning pattern
         if(learningPattern) {
-            layout.openDrawer(drawer);
+//            layout.openDrawer(drawer);
             disableLearningPattern();
         }
     }
@@ -916,6 +916,24 @@ public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivi
 
     }
 
+    /**
+     * Close the current drawer
+     */
+    public void closeDrawer() {
+        layout.closeDrawer(drawer);
+    }
+
+    /**
+     * Close the current drawer
+     * @param gravity the gravity
+     */
+    public void closeDrawer(int gravity) {
+        layout.closeDrawer(gravity);
+    }
+
+    public boolean isDrawn() {
+        return layout.isDrawerOpen(GravityCompat.START);
+    }
     public void setDrawerHeaderImage(Bitmap background) {
         if(drawerHeaderType != DRAWERHEADER_IMAGE)
             throw new RuntimeException("Your header is not setted to Image, check in your styles.xml");

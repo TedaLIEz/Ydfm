@@ -6,7 +6,10 @@ import android.graphics.Color;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.view.ViewGroupCompat;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -88,9 +91,7 @@ public class MainActivity extends MaterialNavigationDrawer {
         section6.setSectionColor(red,red);
         collectSection.setSectionColor(red, red);
         settingsSection.setSectionColor(red,red);
-
-
-        this.setBackPattern(MaterialNavigationDrawer.BACKPATTERN_CUSTOM);
+        this.setBackPattern(MaterialNavigationDrawer.BACKPATTERN_BACK_TO_FIRST);
     }
 
 
@@ -170,15 +171,20 @@ public class MainActivity extends MaterialNavigationDrawer {
     public void ClearMem(View view){
         Toast.makeText(MainActivity.this,"Click",Toast.LENGTH_SHORT).show();
     }
+    // always exit at section1
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // TODO Auto-generated method stub
-        if(keyCode == KeyEvent.KEYCODE_BACK)
-        {
-            exitBy2Click();      //调用双击退出函数
+    public void onBackPressed() {
+        if (isDrawn()) {
+            closeDrawer();
+        } else {
+            if (getCurrentSection() == section1) {
+                exitBy2Click();
+            } else {
+                super.onBackPressed();
+            }
         }
-        return false;
     }
+
     /**
      * 双击退出函数
      */
