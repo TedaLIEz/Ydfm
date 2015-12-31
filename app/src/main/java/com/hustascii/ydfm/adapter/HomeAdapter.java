@@ -28,6 +28,7 @@ import java.util.List;
 /**
  * Created by wei on 15-1-12.
  */
+@Deprecated
 public class HomeAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;

@@ -11,7 +11,7 @@ import java.io.Serializable;
 /**
  * Created by wei on 15/11/28.
  */
-public class MusicContentLite extends ContentEntry implements Serializable {
+public class MusicContentLite extends ContentEntry {
 
     public static final int TYPE_DEFAULT = 0;
     public static final int TYPE_NEW = 1;
@@ -47,5 +47,29 @@ public class MusicContentLite extends ContentEntry implements Serializable {
         return serialVersionUID;
     }
 
+    @Override
+    public String toString() {
+        return super.toString() + "MusicContentLite{" +
+                "is_download=" + is_download +
+                '}';
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        MusicContentLite that = (MusicContentLite) o;
+
+        return is_download == that.is_download;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + is_download;
+        return result;
+    }
 }

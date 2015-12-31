@@ -34,6 +34,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.orhanobut.logger.Logger;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.apache.http.Header;
@@ -62,8 +63,6 @@ public class PlayActivity extends MySwipeBackActivity {
     private MusicPlayer player;
     private String contentUrl;
     private String musicUrl;
-
-
     public TextView mTitle;
     public CircleImageView mImg;
     public TextView mAuthor;
@@ -76,10 +75,8 @@ public class PlayActivity extends MySwipeBackActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
-        intent = getIntent();
         isLike=true;
-        musicContent = (MusicContentLite) intent.getSerializableExtra("map");
-        Log.i("build",""+Build.VERSION.SDK_INT);
+        Log.i("build", "" + Build.VERSION.SDK_INT);
         statusBar = (TextView) findViewById(R.id.statusBar);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Play");
@@ -90,7 +87,6 @@ public class PlayActivity extends MySwipeBackActivity {
                 finish();
             }
         });
-
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
             statusBar = (TextView) findViewById(R.id.statusBar);
             Log.v("height", String.valueOf(Globles.getStatusBarHeight(this)));
@@ -101,12 +97,7 @@ public class PlayActivity extends MySwipeBackActivity {
             statusBar.setHeight(0);
 
         }
-
         setSupportActionBar(toolbar);
-
-
-
-
         mTitle = (TextView) findViewById(R.id.title);
         mAuthor = (TextView) findViewById(R.id.author);
         mSpeaker = (TextView) findViewById(R.id.speaker);
@@ -118,42 +109,7 @@ public class PlayActivity extends MySwipeBackActivity {
         status = 0;
         player = MusicPlayer.getInstance(myBar);
 
-
-
-        contentUrl = musicContent.getContentUrl();
-        if (musicUrl == null || musicUrl.equals("")) {
-            AsyncHttpClient client = new AsyncHttpClient();
-            client.get(Globles.BASE_URL + contentUrl.substring(1), new AsyncHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                    super.onSuccess(statusCode, headers, responseBody);
-                    Log.v("result",new String(responseBody));
-                    musicUrl = Globles.BASE_URL + Crawls.getMusicUrl(new String(responseBody)).substring(1);
-                    Log.v("musicUrl", musicUrl);
-
-                    if (musicUrl == null || musicUrl.equals("")) {
-                        Toast.makeText(getApplicationContext(), "网页解析错误", Toast.LENGTH_SHORT).show();
-                    } else {
-
-
-                        if(player.isplay()){
-                            if(musicUrl.equals(player.getUrl())) {
-                                myBtn.setImageResource(R.drawable.ic_stop_fm);
-                                myBar.setProgress(player.getpos());
-                            }
-                        }else{
-                            if(musicUrl.equals(player.getUrl())){
-                                myBar.setProgress(player.getpos());
-                            }else {
-
-                                //player.prepare();
-                            }
-                        }
-
-                    }
-                }
-            });
-        }
+        handleIntent();
 
 
         myBtn.setOnClickListener(new View.OnClickListener() {
@@ -236,6 +192,49 @@ public class PlayActivity extends MySwipeBackActivity {
                 vibrate(VIBRATE_DURATION);
             }
         });
+    }
+
+    private void handleIntent() {
+        intent = getIntent();
+        musicContent = (MusicContentLite) intent.getSerializableExtra("map");
+        if (Globles.DEBUG) {
+            assert musicContent != null;
+            Logger.d(musicContent.toString());
+        }
+        contentUrl = musicContent.getContentUrl();
+        if (musicUrl == null || musicUrl.equals("")) {
+            AsyncHttpClient client = new AsyncHttpClient();
+            client.get(Globles.BASE_URL + contentUrl.substring(1), new AsyncHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                    super.onSuccess(statusCode, headers, responseBody);
+                    Log.v("result", new String(responseBody));
+                    musicUrl = Globles.BASE_URL + Crawls.getMusicUrl(new String(responseBody)).substring(1);
+                    Log.v("musicUrl", musicUrl);
+
+                    if (musicUrl == null || musicUrl.equals("")) {
+                        Toast.makeText(getApplicationContext(), "网页解析错误", Toast.LENGTH_SHORT).show();
+                    } else {
+
+
+                        if(player.isplay()){
+                            if(musicUrl.equals(player.getUrl())) {
+                                myBtn.setImageResource(R.drawable.ic_stop_fm);
+                                myBar.setProgress(player.getpos());
+                            }
+                        }else{
+                            if(musicUrl.equals(player.getUrl())){
+                                myBar.setProgress(player.getpos());
+                            }else {
+
+                                //player.prepare();
+                            }
+                        }
+
+                    }
+                }
+            });
+        }
     }
 
 

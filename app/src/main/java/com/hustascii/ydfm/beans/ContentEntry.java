@@ -1,9 +1,11 @@
 package com.hustascii.ydfm.beans;
 
+import java.io.Serializable;
+
 /**
  * Created by wei on 15/11/30.
  */
-public class ContentEntry {
+public class ContentEntry implements Serializable{
     private String music_id;
     private String title;
     private String author;
@@ -108,5 +110,51 @@ public class ContentEntry {
 
     public void setContentUrl(String contentUrl) {
         this.contentUrl = contentUrl;
+    }
+
+    @Override
+    public String toString() {
+        return "ContentEntry{" +
+                "music_id='" + music_id + '\'' +
+                ", title='" + title + '\'' +
+                ", author='" + author + '\'' +
+                ", speaker='" + speaker + '\'' +
+                ", time='" + time + '\'' +
+                ", listen='" + listen + '\'' +
+                ", imgUrl='" + imgUrl + '\'' +
+                ", contentUrl='" + contentUrl + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ContentEntry that = (ContentEntry) o;
+
+        if (music_id != null ? !music_id.equals(that.music_id) : that.music_id != null)
+            return false;
+        if (title != null ? !title.equals(that.title) : that.title != null) return false;
+        if (author != null ? !author.equals(that.author) : that.author != null) return false;
+        if (speaker != null ? !speaker.equals(that.speaker) : that.speaker != null) return false;
+        if (time != null ? !time.equals(that.time) : that.time != null) return false;
+        if (listen != null ? !listen.equals(that.listen) : that.listen != null) return false;
+        if (imgUrl != null ? !imgUrl.equals(that.imgUrl) : that.imgUrl != null) return false;
+        return !(contentUrl != null ? !contentUrl.equals(that.contentUrl) : that.contentUrl != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = music_id != null ? music_id.hashCode() : 0;
+        result = 31 * result + (title != null ? title.hashCode() : 0);
+        result = 31 * result + (author != null ? author.hashCode() : 0);
+        result = 31 * result + (speaker != null ? speaker.hashCode() : 0);
+        result = 31 * result + (time != null ? time.hashCode() : 0);
+        result = 31 * result + (listen != null ? listen.hashCode() : 0);
+        result = 31 * result + (imgUrl != null ? imgUrl.hashCode() : 0);
+        result = 31 * result + (contentUrl != null ? contentUrl.hashCode() : 0);
+        return result;
     }
 }

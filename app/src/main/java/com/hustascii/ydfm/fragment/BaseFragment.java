@@ -3,18 +3,23 @@ package com.hustascii.ydfm.fragment;
 
 import android.app.ActionBar;
 import android.app.ProgressDialog;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -33,6 +38,7 @@ import com.avos.avoscloud.FindCallback;
 import com.hustascii.ydfm.R;
 import com.hustascii.ydfm.activity.PlayActivity;
 import com.hustascii.ydfm.adapter.HomeAdapter;
+import com.hustascii.ydfm.adapter.MusicContentLiteAdapter;
 import com.hustascii.ydfm.beans.MusicContent;
 import com.hustascii.ydfm.beans.MusicContentLite;
 import com.hustascii.ydfm.util.FileUtils;
@@ -41,6 +47,8 @@ import com.hustascii.ydfm.util.NetWorkUtils;
 import com.hustascii.ydfm.view.RefreshLayout;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
+import com.marshalchen.ultimaterecyclerview.animators.FlipInRightYAnimator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.orhanobut.logger.Logger;
@@ -60,14 +68,13 @@ import java.util.List;
 
 
 public class BaseFragment extends Fragment {
-    //TODO: Add Init View when first load data
     protected final static String CACHE_FILE_NAME = "content_json";
-    private RefreshLayout swipeLayout;
-    private ListView mListView;
-    private HomeAdapter homeAdapter;
+    private String mCurrResponse = "";
     private List<MusicContentLite> mList;
+    private UltimateRecyclerView ultimateRecyclerView;
     private String url;
     private int channel;
+    private MusicContentLiteAdapter musicContentLiteAdapter;
     private ImageLoader mImageLoader;
     private int page;
     protected String mTimeStamp;
@@ -97,7 +104,7 @@ public class BaseFragment extends Fragment {
     //    private Snackbar snackbar;
 
     enum State {
-        STATE_INIT, STATE_OK, STATE_REFRESH_FAILED, STATE_UNKNOWN
+        STATE_INIT, STATE_OK, STATE_REFRESH_FAILED
     }
 
     public BaseFragment() {
@@ -109,6 +116,8 @@ public class BaseFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         page = 1;
+        mList = new ArrayList<>();
+        musicContentLiteAdapter = new MusicContentLiteAdapter(mList);
         mCacheFileName = CACHE_FILE_NAME;
     }
 
@@ -127,88 +136,98 @@ public class BaseFragment extends Fragment {
         mTryAgainBtn = (Button) view.findViewById(R.id.btn_retry);
 
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        mListView = (ListView) view.findViewById(R.id.infolist);
-        swipeLayout = (RefreshLayout) view.findViewById(R.id.swipe_refresh);
-
-
+        ultimateRecyclerView = (UltimateRecyclerView) view.findViewById(R.id.urv_infolist);
         mImageLoader = ImageLoader.getInstance();
-        mListView.setOnScrollListener(new PauseOnScrollListener(mImageLoader, false, false));
-        swipeLayout.setColorScheme(android.R.color.holo_red_light, android.R.color.holo_green_light,
-                android.R.color.holo_blue_bright, android.R.color.holo_orange_light);
-        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getData();
-
-            }
-        });
-
-        swipeLayout.setOnLoadListener(new RefreshLayout.OnLoadListener() {
-
-            @Override
-            public void onLoad() {
-                loadMore();
-            }
-        });
-
+        initRecyclerView();
         mTryAgainBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showRecyclerView();
                 getData();
-                showByState(State.STATE_INIT);
             }
         });
-        setListView();
         return view;
     }
 
+    private void initRecyclerView() {
+        ultimateRecyclerView.enableLoadmore();
+        ultimateRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        musicContentLiteAdapter.setCustomLoadMoreView(LayoutInflater.from(getActivity()).inflate(R.layout.custom_bottom_progressbar, null));
+        ultimateRecyclerView.setAdapter(musicContentLiteAdapter);
+
+        musicContentLiteAdapter.setContentClickListener(new MusicContentLiteAdapter.ContentClickListener() {
+
+            @Override
+            public void onClick(MusicContentLite musicContentLite) {
+                Intent intent = new Intent(getActivity(), PlayActivity.class);
+                intent.putExtra("map", musicContentLite);
+                startActivity(intent);
+                getActivity().overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+
+            }
+        });
+//        ultimateRecyclerView.setItemAnimator(new FlipInRightYAnimator());
+        ultimateRecyclerView.setDefaultOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                refresh();
+            }
+        });
+        ultimateRecyclerView.setOnLoadMoreListener(new UltimateRecyclerView.OnLoadMoreListener() {
+            @Override
+            public void loadMore(int itemsCount, int maxLastVisiblePosition) {
+                loadMoreData();
+            }
+
+        });
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+
+    }
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getData();
-
     }
 
     private void showByState(State state) {
         mCurrentState = state;
         if (mCurrentState == State.STATE_REFRESH_FAILED) {
-            onRefreshLoadFailed();
+            showError();
         } else if (mCurrentState == State.STATE_OK) {
-            onLoadSuccess();
-        } else if (mCurrentState == State.STATE_INIT) {
-            showRefreshAnim();
+            showRecyclerView();
         }
     }
 
-    //call when data load.
-    private void showRefreshAnim() {
-        Logger.d("anim called");
-        if (swipeLayout.getVisibility() != View.VISIBLE) {
-            swipeLayout.setVisibility(View.VISIBLE);
-        }
-        if (mLoadFailedTipContainer.getVisibility() != View.GONE) {
-            mLoadFailedTipContainer.setVisibility(View.GONE);
-        }
-        swipeLayout.setRefreshing(true);
-        swipeLayout.postDelayed(new Runnable() {
+
+    // call when pull on refresh
+    private void refresh() {
+        AsyncHttpClient client = new AsyncHttpClient();
+        page = 1;
+        client.get(getPageUrl(), new AsyncHttpResponseHandler() {
             @Override
-            public void run() {
-                swipeLayout.setRefreshing(false);
+            public void onSuccess(int statusCode, Header[] headers,
+                                  byte[] responseBody) {
+                if (statusCode == 200) {
+                    onDataLoadSuccess(new String(responseBody));
+                } else {
+                    Toast.makeText(getActivity(),
+                            "网络访问异常，错误码：" + statusCode, Toast.LENGTH_SHORT).show();
+                }
             }
-        }, 2500);
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Logger.d(getPageUrl());
+                Toast.makeText(getActivity(),
+                        "网络访问异常，错误码：" + statusCode, Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        ultimateRecyclerView.setRefreshing(false);
     }
 
-    // call when data load success
-    private void onLoadSuccess() {
-        if (swipeLayout == null) {
-            return;
-        }
-        mTryAgainBtn.setVisibility(View.GONE);
-        swipeLayout.setVisibility(View.VISIBLE);
-        swipeLayout.setRefreshing(false);
-        mLoadingFlgImg.setVisibility(View.GONE);
-        mTv.setVisibility(View.GONE);
-    }
 
 
     public String getUrl() {
@@ -230,40 +249,18 @@ public class BaseFragment extends Fragment {
 
     @Override
     public void onResume() {
-        if (mListView.getAdapter() == null || mListView.getAdapter().isEmpty())
-            mListView.setAdapter(homeAdapter);
-        mCurrentState = State.STATE_INIT;
         super.onResume();
+        if (mCurrentState == State.STATE_REFRESH_FAILED && NetWorkUtils.isNetworkConnected(getActivity())) {
+            getData();
+        }
     }
 
-    // init listView with adapter
-    private void setListView() {
-        mList = new LinkedList<>();
-        homeAdapter = new HomeAdapter(getActivity(), mList);
-        mListView.setAdapter(homeAdapter);
-        //TODO: musicContent is null
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                MusicContentLite musicContent = mList.get(i);
-                Logger.d("music content" + musicContent);
-                Intent intent = new Intent(getActivity(), PlayActivity.class);
-                intent.putExtra("map", musicContent);
-                startActivity(intent);
-                getActivity().overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-            }
-        });
-
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-    }
 
     /**
      * Get data in page 1
      *
      **/
     public void getData() {
-//        showRefreshAnim();
 
         AsyncHttpClient client = new AsyncHttpClient();
         page = 1;
@@ -271,31 +268,28 @@ public class BaseFragment extends Fragment {
             @Override
             public void onStart() {
                 super.onStart();
-                showRefreshAnim();
+                showAnim();
             }
 
             @Override
             public void onProgress(int bytesWritten, int totalSize) {
                 super.onProgress(bytesWritten, totalSize);
-//                showRefreshAnim();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers,
                                   byte[] responseBody) {
                 if (statusCode == 200) {
-                    mList.clear();
-                    mList.addAll(parseDoc(new String(responseBody)));
-                    homeAdapter.notifyDataSetChanged();
-//                    showRefreshAnim();
+//                    if (!mCurrResponse.equals(new String(responseBody))) {
+//                        onDataLoadSuccess(new String(responseBody));
+//                    }
+//
+//                    mCurrResponse = new String(responseBody);
+                    onDataLoadSuccess(new String(responseBody));
                 } else {
                     Toast.makeText(getActivity(),
                             "网络访问异常，错误码：" + statusCode, Toast.LENGTH_SHORT).show();
-                    if (!mIsFirstLoaded) {
-                        showByState(State.STATE_REFRESH_FAILED);
-                    } else {
-                        swipeLayout.setRefreshing(false);
-                    }
+                    showByState(State.STATE_REFRESH_FAILED);
 
                 }
             }
@@ -306,19 +300,46 @@ public class BaseFragment extends Fragment {
                 Logger.d(getPageUrl());
                 Toast.makeText(getActivity(),
                         "网络访问异常，错误码：" + statusCode, Toast.LENGTH_SHORT).show();
-                if (!mIsFirstLoaded) {
-                    showByState(State.STATE_REFRESH_FAILED);
-                } else {
-                    swipeLayout.setRefreshing(false);
-                }
+                showByState(State.STATE_REFRESH_FAILED);
+
 
             }
         });
-        mIsFirstLoaded = false;
-
     }
 
-    private void loadMore() {
+    private void onDataLoadSuccess(String responseBody) {
+        showByState(State.STATE_OK);
+        mList.clear();
+        mList.addAll(parseDoc(responseBody));
+        if (!mCurrResponse.equals(responseBody)) {
+            musicContentLiteAdapter.notifyItemChanged(0);
+        }
+        mCurrResponse = responseBody;
+    }
+
+    private void showRecyclerView() {
+        if (ultimateRecyclerView == null) {
+            return;
+        }
+        if (ultimateRecyclerView.getVisibility() != View.VISIBLE) {
+            ultimateRecyclerView.setVisibility(View.VISIBLE);
+        }
+        if (mLoadFailedTipContainer.getVisibility() != View.GONE) {
+            mLoadFailedTipContainer.setVisibility(View.GONE);
+        }
+    }
+
+    private void showAnim() {
+        ultimateRecyclerView.setRefreshing(true);
+        ultimateRecyclerView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ultimateRecyclerView.setRefreshing(false);
+            }
+        }, 2400);
+    }
+
+    private void loadMoreData() {
         AsyncHttpClient client = new AsyncHttpClient();
         page += 1;
         client.get(this.url + String.valueOf(page) + "/", new AsyncHttpResponseHandler() {
@@ -328,43 +349,36 @@ public class BaseFragment extends Fragment {
 
                 if (statusCode == 200) {
                     mList.addAll(parseDoc(new String(responseBody)));
-                    swipeLayout.setLoading(false);
-                    homeAdapter.notifyDataSetChanged();
+                    musicContentLiteAdapter.notifyDataSetChanged();
                     showByState(State.STATE_OK);
-
                 } else {
                     Toast.makeText(getActivity(),
                             "网络访问异常，错误码：" + statusCode, Toast.LENGTH_SHORT).show();
                 }
-
-
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                if (mIsFirstLoaded) {
-                    mHasLoadedUI = false;
-                }
+//                if (mIsFirstLoaded) {
+//                    mHasLoadedUI = false;
+//                }
+                Toast.makeText(getActivity(),
+                        "网络访问异常，错误码：" + statusCode, Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    //show reload UI when refresh failed.
+    //TODO: Overhead
     private void onRefreshLoadFailed() {
-        if (swipeLayout == null)
-            return;
-        //TODO: update failed UI
-        swipeLayout.setVisibility(View.GONE);
+        ultimateRecyclerView.setVisibility(View.GONE);
         mLoadFailedTipContainer.setVisibility(View.VISIBLE);
         Toast.makeText(getActivity(), mRes.getString(R.string.refresh_failed), Toast.LENGTH_SHORT).show();
     }
 
-    //TODO: What the f**k r this?
-
-    private void onLoadFailed() {
-        if (swipeLayout == null)
+    private void showError() {
+        if (ultimateRecyclerView == null)
             return;
-        swipeLayout.setVisibility(View.GONE);
+        ultimateRecyclerView.setVisibility(View.GONE);
         mLoadFailedTipContainer.setVisibility(View.VISIBLE);
         mTv.setText(mRes.getString(R.string.load_failed));
         mLoadingFlgImg.setImageResource(R.drawable.online_load_failed);
@@ -411,7 +425,7 @@ public class BaseFragment extends Fragment {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            if (swipeLayout == null)
+            if (ultimateRecyclerView == null)
                 return;
             //拿到Json，开始走UI层操作
             if (!NetWorkUtils.isNetworkConnected(getActivity())) {//未联网时先读取文件缓存,如果缓存中没有数据，则提示联网
@@ -439,7 +453,7 @@ public class BaseFragment extends Fragment {
         }
 
         mLoadFailedTipContainer.setVisibility(View.GONE);
-        swipeLayout.setVisibility(View.VISIBLE);
+        ultimateRecyclerView.setVisibility(View.VISIBLE);
         //构建数据，刷新listview
         try {
             mList = generateContentData(s);
@@ -460,7 +474,7 @@ public class BaseFragment extends Fragment {
         if (mList == null || mList.size() == 0) {
             return;
         }
-        if (homeAdapter != null) {
+        if (musicContentLiteAdapter != null) {
 //            pd.dismiss();
 
             switch (command) {
@@ -476,7 +490,7 @@ public class BaseFragment extends Fragment {
                     break;
                 default:
             }
-            homeAdapter.notifyDataSetChanged();
+            musicContentLiteAdapter.notifyDataSetChanged();
         }
     }
 
@@ -492,9 +506,9 @@ public class BaseFragment extends Fragment {
 
 
     private void onNetWorkUnConnectedWithNoFileCache() {
-        if (swipeLayout == null)
+        if (ultimateRecyclerView == null)
             return;
-        swipeLayout.setVisibility(View.GONE);
+        ultimateRecyclerView.setVisibility(View.GONE);
         mLoadFailedTipContainer.setVisibility(View.VISIBLE);
         mTv.setText(mRes.getString(R.string.load_failed));
         mLoadingFlgImg.setImageResource(R.drawable.online_load_failed);
@@ -556,9 +570,9 @@ public class BaseFragment extends Fragment {
     }
 
     protected void onStartLoading() {//第一次加载时的回调
-        if (swipeLayout == null)
+        if (ultimateRecyclerView == null)
             return;
-        swipeLayout.setVisibility(View.GONE);
+        ultimateRecyclerView.setVisibility(View.GONE);
         mLoadFailedTipContainer.setVisibility(View.VISIBLE);
         mTv.setText(mRes.getString(R.string.network_loading));//正在加载的页面显示
         mLoadingFlgImg.setImageResource(R.drawable.ic_logo);

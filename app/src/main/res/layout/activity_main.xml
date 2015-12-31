@@ -40,19 +40,24 @@
             android:textColor="@color/textColor"
             android:background="@drawable/retry_btn_background" />
     </LinearLayout>
-
-    <com.hustascii.ydfm.view.RefreshLayout
-        android:id="@+id/swipe_refresh"
+    <com.marshalchen.ultimaterecyclerview.UltimateRecyclerView
+        android:id="@+id/urv_infolist"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <ListView
-        android:id="@+id/infolist"
-        android:dividerHeight="10dp"
-        android:divider="#F3F3F3"
-        android:alwaysDrawnWithCache="true"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"></ListView>
-    </com.hustascii.ydfm.view.RefreshLayout>
+    </com.marshalchen.ultimaterecyclerview.UltimateRecyclerView>
+    <!--<com.hustascii.ydfm.view.RefreshLayout-->
+        <!--android:id="@+id/swipe_refresh"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent">-->
+
+    <!--<ListView-->
+        <!--android:id="@+id/infolist"-->
+        <!--android:dividerHeight="10dp"-->
+        <!--android:divider="#F3F3F3"-->
+        <!--android:alwaysDrawnWithCache="true"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"></ListView>-->
+    <!--</com.hustascii.ydfm.view.RefreshLayout>-->
 
 </RelativeLayout>
