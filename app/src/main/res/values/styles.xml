@@ -4,8 +4,10 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="android:windowIsTranslucent">true</item>
-
     </style>
+
+
+
     <style name="NavigationDrawer" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar.TranslucentKitKatStatusBar">
         <!-- Customize your theme here. -->
 
@@ -40,6 +42,7 @@
         <item name="colorPrimaryDark">#F36B63</item>
         <item name="colorAccent">#FFFFFF</item>
         <item name="drawerType">@integer/DRAWERTYPE_CUSTOM</item>
+        <item name="android:textColorSecondary">#FFFFFF</item>
     </style>
 
     <style name="CustomHeaderTranslucent" parent="MaterialNavigationDrawerTheme.Light.DarkActionBar.TranslucentKitKatStatusBar">

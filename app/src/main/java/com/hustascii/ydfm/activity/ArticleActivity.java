@@ -47,7 +47,7 @@ public class ArticleActivity extends ActionBarActivity {
         statusBar=(TextView)findViewById(R.id.statusBar);
         toolbar=(Toolbar)findViewById(R.id.toolbar);
         toolbar.setTitle("Article");
-        toolbar.setNavigationIcon(R.drawable.ic_back_fm);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_36dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -70,7 +70,6 @@ public class PlayActivity extends MySwipeBackActivity {
     public TextView mTimer;
     public TextView mListen;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,7 +79,7 @@ public class PlayActivity extends MySwipeBackActivity {
         statusBar = (TextView) findViewById(R.id.statusBar);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Play");
-        toolbar.setNavigationIcon(R.drawable.ic_back_fm);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_36dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,19 +117,19 @@ public class PlayActivity extends MySwipeBackActivity {
 
                 if (!player.isplay()) {
                     myBtn.setImageResource(R.drawable.ic_stop_fm);
-                    Log.i("mp3",musicUrl);
-                    if(!musicUrl.equals(player.getUrl())){
+                    Log.i("mp3", musicUrl);
+                    if (!musicUrl.equals(player.getUrl())) {
                         player.setUrl(musicUrl);
                         player.prepare();
-                    }else{
+                    } else {
                         //player.setUrl(musicUrl);
                         player.play();
                     }
                 } else {
-                    if(musicUrl.equals(player.getUrl())) {
+                    if (musicUrl.equals(player.getUrl())) {
                         myBtn.setImageResource(R.drawable.ic_play_fm);
                         player.pause();
-                    }else{
+                    } else {
                         myBtn.setImageResource(R.drawable.ic_stop_fm);
                         player.setUrl(musicUrl);
                         player.prepare();
@@ -190,6 +189,18 @@ public class PlayActivity extends MySwipeBackActivity {
             @Override
             public void onScrollOverThreshold() {
                 vibrate(VIBRATE_DURATION);
+            }
+        });
+        findViewById(R.id.article).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (contentUrl == null && contentUrl.isEmpty()) {
+                    Toast.makeText(PlayActivity.this, "url为空", Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent i = new Intent(PlayActivity.this, ArticleActivity.class);
+                    i.putExtra("url", contentUrl);
+                    startActivity(i);
+                }
             }
         });
     }
@@ -291,17 +302,6 @@ public class PlayActivity extends MySwipeBackActivity {
                 0, duration
         };
         vibrator.vibrate(pattern, -1);
-    }
-
-    public void takeArticle(View ivew) {
-        if (contentUrl == null && contentUrl.isEmpty()) {
-            Toast.makeText(this, "url为空", Toast.LENGTH_SHORT).show();
-        } else {
-            Intent i = new Intent(PlayActivity.this, ArticleActivity.class);
-            i.putExtra("url", contentUrl);
-            startActivity(i);
-        }
-
     }
 
 

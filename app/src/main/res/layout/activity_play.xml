@@ -19,7 +19,8 @@
         android:layout_height="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:background="?attr/colorPrimary"
-        android:layout_below="@+id/statusBar"></android.support.v7.widget.Toolbar>
+        android:layout_below="@+id/statusBar">
+    </android.support.v7.widget.Toolbar>
 
     <LinearLayout
         android:orientation="vertical"
@@ -189,12 +190,14 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/article"
             android:layout_weight="4"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
             android:clickable="true"
-            android:onClick="takeArticle"
+            android:typeface="monospace"
+            android:textColor="@color/textColor"
             android:text="阅读文章" />
     </LinearLayout>
 

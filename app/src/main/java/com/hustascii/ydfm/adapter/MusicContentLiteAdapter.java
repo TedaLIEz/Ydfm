@@ -64,7 +64,7 @@ public class MusicContentLiteAdapter extends UltimateViewAdapter<MusicContentLit
                         //设置图片加入缓存前，对bitmap进行设置
                         //.preProcessor(BitmapProcessor preProcessor)
                 .resetViewBeforeLoading(true)//设置图片在下载前是否重置，复位
-                .displayer(new RoundedBitmapDisplayer(20))//是否设置为圆角，弧度为多少
+//                .displayer(new RoundedBitmapDisplayer(20))//是否设置为圆角，弧度为多少
                         //TODO: RecyclerView seems to have default anim for view loaded.
 //                .displayer(new FadeInBitmapDisplayer(100))//是否图片加载好后渐入的动画时间
                 .build();//构建完成

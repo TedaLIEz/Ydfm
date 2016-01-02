@@ -27,6 +27,7 @@ import java.util.List;
 
 /**
  * Created by wei on 15-1-12.
+ * Deprecated for using recyclerview instead
  */
 @Deprecated
 public class HomeAdapter extends BaseAdapter {

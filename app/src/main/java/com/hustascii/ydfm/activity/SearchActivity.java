@@ -42,7 +42,7 @@ public class SearchActivity extends MySwipeBackActivity {
         statusBar = (TextView) findViewById(R.id.statusBar);
         toolbar=(Toolbar)findViewById(R.id.search_toolbar);
         his_lv=(ListView)findViewById(R.id.his_list);
-        toolbar.setNavigationIcon(R.drawable.ic_back_fm);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_36dp);
         toolbar.setTitle("搜索");
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

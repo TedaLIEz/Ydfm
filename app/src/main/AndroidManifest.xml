@@ -14,7 +14,7 @@
         android:label="@string/app_name" >
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
+            android:label="悦读"
             android:theme="@style/CustomHeader" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

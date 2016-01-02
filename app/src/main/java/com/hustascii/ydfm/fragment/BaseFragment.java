@@ -134,7 +134,7 @@ public class BaseFragment extends Fragment {
         mTv = (TextView) view.findViewById(R.id.tv_tip);
         mLoadingFlgImg = (ImageView) view.findViewById(R.id.img_load_flg);
         mTryAgainBtn = (Button) view.findViewById(R.id.btn_retry);
-
+        //TODO: set toolbar's color to white
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         ultimateRecyclerView = (UltimateRecyclerView) view.findViewById(R.id.urv_infolist);
         mImageLoader = ImageLoader.getInstance();

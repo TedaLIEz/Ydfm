@@ -54,7 +54,6 @@ public class MainActivity extends MaterialNavigationDrawer {
 
         View view = LayoutInflater.from(this).inflate(R.layout.custom_drawer,null);
         setDrawerHeaderCustom(view);
-
         // create sections
         section1 = this.newSection("悦读",getFragmentInstance(Globles.BASE_URL + "channel/1/"));
         section2 = this.newSection("情感",getFragmentInstance(Globles.BASE_URL + "channel/2/"));
@@ -92,6 +91,7 @@ public class MainActivity extends MaterialNavigationDrawer {
         collectSection.setSectionColor(red, red);
         settingsSection.setSectionColor(red,red);
         this.setBackPattern(MaterialNavigationDrawer.BACKPATTERN_BACK_TO_FIRST);
+        getToolbar().setTitle("悦读");
     }
 
 

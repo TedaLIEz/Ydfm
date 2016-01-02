@@ -8,7 +8,7 @@
     <application></application>
 
     <uses-sdk
-        android:minSdkVersion="10"
+        android:minSdkVersion="11"
         android:targetSdkVersion="21"
         tools:overrideLibrary="at.markushi.ui">
     </uses-sdk>

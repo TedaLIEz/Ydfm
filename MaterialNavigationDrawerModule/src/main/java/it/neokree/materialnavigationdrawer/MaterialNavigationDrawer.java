@@ -202,7 +202,7 @@ public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivi
         // init toolbar & status bar
         statusBar = (ImageView) findViewById(R.id.statusBar);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-
+        toolbar.setTitleTextColor(R.color.abc_background_cache_hint_selector_material_light);
         // init drawer components
         layout = (MaterialDrawerLayout) this.findViewById(R.id.drawer_layout);
         content = (RelativeLayout) this.findViewById(R.id.content);
@@ -524,7 +524,8 @@ public abstract class MaterialNavigationDrawer<Fragment> extends ActionBarActivi
     @Override
     public void setTitle(CharSequence title) {
         this.title = title;
-        this.getSupportActionBar().setTitle(title);
+        toolbar.setTitle(title);
+        toolbar.setTitleTextColor(Color.WHITE);
     }
 
     @Override

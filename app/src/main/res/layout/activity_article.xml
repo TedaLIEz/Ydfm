@@ -40,13 +40,13 @@
         <LinearLayout
             android:padding="10dp"
             android:layout_width="match_parent"
-            android:background="@android:color/white"
             android:layout_height="match_parent">
 
         <me.biubiubiu.justifytext.library.JustifyTextView
             android:id="@+id/article"
             android:padding="10dp"
-
+            android:typeface="monospace"
+            android:textColor="@color/textColor"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
             </LinearLayout>
