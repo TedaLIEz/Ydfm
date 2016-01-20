@@ -117,7 +117,6 @@ public class PlayActivity extends MySwipeBackActivity {
 
                 if (!player.isplay()) {
                     myBtn.setImageResource(R.drawable.ic_stop_fm);
-                    Log.i("mp3", musicUrl);
                     if (!musicUrl.equals(player.getUrl())) {
                         player.setUrl(musicUrl);
                         player.prepare();
@@ -144,8 +143,21 @@ public class PlayActivity extends MySwipeBackActivity {
         myBar.setOnProgressChangeListener(new DiscreteSeekBar.OnProgressChangeListener() {
             @Override
             public void onProgressChanged(DiscreteSeekBar seekBar, int value, boolean fromUser) {
-//                int v = value * player.mediaPlayer.getDuration() / seekBar.getMax();
-//                player.mediaPlayer.seekTo(v);
+                if (fromUser) {
+                    int v = value * player.mediaPlayer.getDuration() / seekBar.getMax();
+                    player.mediaPlayer.seekTo(v);
+                }
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(DiscreteSeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(DiscreteSeekBar seekBar) {
+
             }
 
         });

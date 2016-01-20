@@ -81,6 +81,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/de.hdodenhof/circleimageview/1.2.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/in.srain.cube/ultra-ptr/1.0.10/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/me.biubiubiu.justifytext/library/1.1/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/org.adw.library/discrete-seekbar/1.0.0/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
@@ -96,6 +97,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="jsoup-1.6.1" level="project" />
     <orderEntry type="library" exported="" name="fastjson" level="project" />
+    <orderEntry type="library" exported="" name="discrete-seekbar-1.0.0" level="project" />
     <orderEntry type="library" exported="" name="okio-1.6.0" level="project" />
     <orderEntry type="library" exported="" name="recyclerview-v7-22.2.1" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-22.2.1" level="project" />
@@ -126,7 +128,6 @@
     <orderEntry type="library" exported="" name="avoscloud-sdk-v3.12" level="project" />
     <orderEntry type="library" exported="" name="umeng-analytics-v5.6.1" level="project" />
     <orderEntry type="library" exported="" name="qq.sdk.1.6.1" level="project" />
-    <orderEntry type="module" module-name="seekbarlibrary" exported="" />
     <orderEntry type="module" module-name="MaterialNavigationDrawerModule" exported="" />
     <orderEntry type="module" module-name="library" exported="" />
   </component>
