@@ -5,8 +5,6 @@
       <module fileurl="file://$PROJECT_DIR$/MaterialNavigationDrawerModule/MaterialNavigationDrawerModule.iml" filepath="$PROJECT_DIR$/MaterialNavigationDrawerModule/MaterialNavigationDrawerModule.iml" />
       <module fileurl="file://$PROJECT_DIR$/Ydfm.iml" filepath="$PROJECT_DIR$/Ydfm.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
-      <module fileurl="file://$PROJECT_DIR$/seekbarlibrary/seekbarlibrary.iml" filepath="$PROJECT_DIR$/seekbarlibrary/seekbarlibrary.iml" />
     </modules>
   </component>
 </project>
