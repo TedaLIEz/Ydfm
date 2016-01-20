@@ -56,6 +56,8 @@ public class MusicContentLiteAdapter extends UltimateViewAdapter<MusicContentLit
                 .showImageForEmptyUri(R.drawable.example_1)//设置图片Uri为空或是错误的时候显示的图片
                 .showImageOnFail(R.drawable.example_1)  //设置图片加载/解码过程中错误时候显示的图片
                 .cacheInMemory(true)//设置下载的图片是否缓存在内存中
+                .cacheOnDisk(true)
+                .resetViewBeforeLoading(true)
                 .cacheOnDisc(true)//设置下载的图片是否缓存在SD卡中
                 .considerExifParams(true)  //是否考虑JPEG图像EXIF参数（旋转，翻转）
                 .imageScaleType(ImageScaleType.EXACTLY_STRETCHED)//设置图片以如何的编码方式显示
@@ -121,9 +123,15 @@ public class MusicContentLiteAdapter extends UltimateViewAdapter<MusicContentLit
             }
             if (!mBusy) {
                 Log.v("musicContent.url", musicContent.getImgUrl());
-                mImageLoader.displayImage(Globles.BASE_URL + musicContent.getImgUrl().substring(1), holder.mImg, displayOptions, new AnimateFirstDisplayListener());
+                ImageAware imageAware = new ImageViewAware(holder.mImg, false);
+                mImageLoader.displayImage(Globles.BASE_URL + musicContent.getImgUrl().substring(1), imageAware, displayOptions);
+                //TODO:Flickering using code below
+//                mImageLoader.displayImage(Globles.BASE_URL + musicContent.getImgUrl().substring(1), holder.mImg, displayOptions, new AnimateFirstDisplayListener());
             } else {
-                mImageLoader.displayImage(musicContent.getImgUrl(), holder.mImg, displayOptions);
+                ImageAware imageAware = new ImageViewAware(holder.mImg, false);
+                mImageLoader.displayImage(musicContent.getImgUrl(), imageAware, displayOptions);
+                //TODO:Flickering using code below
+//                mImageLoader.displayImage(musicContent.getImgUrl(), holder.mImg, displayOptions);
             }
 
             holder.mTitle.setText(musicContent.getTitle());

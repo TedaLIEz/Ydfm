@@ -56,7 +56,7 @@ dependencies {
     compile project(':library')
     compile project(':seekbarlibrary')
     compile files('libs/jsoup-1.6.1.jar')
-    compile files('libs/universal-image-loader-1.9.3.jar')
+    compile files('libs/universal-image-loader-1.9.5.jar')
     compile files('libs/fastjson.jar')
     compile files('libs/weibo.sdk.android.sso.3.0.1-leancloud.jar')
     compile files('libs/okio-1.6.0.jar')

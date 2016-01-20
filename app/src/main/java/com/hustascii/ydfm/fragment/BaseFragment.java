@@ -154,7 +154,7 @@ public class BaseFragment extends Fragment {
         ultimateRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         musicContentLiteAdapter.setCustomLoadMoreView(LayoutInflater.from(getActivity()).inflate(R.layout.custom_bottom_progressbar, null));
         ultimateRecyclerView.setAdapter(musicContentLiteAdapter);
-
+        ultimateRecyclerView.setItemAnimator(null);
         musicContentLiteAdapter.setContentClickListener(new MusicContentLiteAdapter.ContentClickListener() {
 
             @Override
@@ -311,9 +311,7 @@ public class BaseFragment extends Fragment {
         showByState(State.STATE_OK);
         mList.clear();
         mList.addAll(parseDoc(responseBody));
-        if (!mCurrResponse.equals(responseBody)) {
-            musicContentLiteAdapter.notifyItemChanged(0);
-        }
+        musicContentLiteAdapter.notifyItemChanged(0);
         mCurrResponse = responseBody;
     }
 
@@ -399,6 +397,7 @@ public class BaseFragment extends Fragment {
             MusicContentLite musicContent = new MusicContentLite(titles.get(i).text(), authors.get(i).text(), speakers.get(i).text(), times.get(i).text(), clicks.get(i).text(), imgs.get(i).attr("src"), urls.get(i).attr("href").toString());
             list.add(musicContent);
         }
+
         return list;
     }
 
