@@ -41,6 +41,7 @@ import com.hustascii.ydfm.adapter.HomeAdapter;
 import com.hustascii.ydfm.adapter.MusicContentLiteAdapter;
 import com.hustascii.ydfm.beans.MusicContent;
 import com.hustascii.ydfm.beans.MusicContentLite;
+import com.hustascii.ydfm.service.CacheThread;
 import com.hustascii.ydfm.util.FileUtils;
 import com.hustascii.ydfm.util.Globles;
 import com.hustascii.ydfm.util.NetWorkUtils;
@@ -67,9 +68,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-public class BaseFragment extends Fragment {
+
+public class BaseFragment extends Fragment implements CacheThread.Callback {
     protected final static String CACHE_FILE_NAME = "content_json";
-    private String mCurrResponse = "";
     private List<MusicContentLite> mList;
     private UltimateRecyclerView ultimateRecyclerView;
     private String url;
@@ -97,9 +98,21 @@ public class BaseFragment extends Fragment {
      */
     private ReadCacheTask mReadCacheTask;
     private WriteCacheTask mWriteCacheTask;
+
+    private CacheThread mCacheThread;
     protected boolean mHasLoadedUI = false;//不管以何种方式得到数据，成功的加载UI标记，避免重复开启读缓存和网络请求的任务
 
     private int num_page = 20;
+
+    @Override
+    public void onReadSuccess() {
+
+    }
+
+    @Override
+    public void onCacheSuccess(String name) {
+        Logger.d("cache in file " + name);
+    }
 
     //    private Snackbar snackbar;
 
@@ -119,6 +132,7 @@ public class BaseFragment extends Fragment {
         mList = new ArrayList<>();
         musicContentLiteAdapter = new MusicContentLiteAdapter(mList);
         mCacheFileName = CACHE_FILE_NAME;
+
     }
 
 
@@ -166,7 +180,6 @@ public class BaseFragment extends Fragment {
 
             }
         });
-//        ultimateRecyclerView.setItemAnimator(new FlipInRightYAnimator());
         ultimateRecyclerView.setDefaultOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -188,6 +201,9 @@ public class BaseFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mCacheThread = new CacheThread(getActivity(), new Handler(), this);
+        mCacheThread.start();
+        mCacheThread.prepareHandler();
         getData();
     }
 
@@ -228,7 +244,11 @@ public class BaseFragment extends Fragment {
         ultimateRecyclerView.setRefreshing(false);
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mCacheThread.quit();
+    }
 
     public String getUrl() {
         return url;
@@ -280,11 +300,6 @@ public class BaseFragment extends Fragment {
             public void onSuccess(int statusCode, Header[] headers,
                                   byte[] responseBody) {
                 if (statusCode == 200) {
-//                    if (!mCurrResponse.equals(new String(responseBody))) {
-//                        onDataLoadSuccess(new String(responseBody));
-//                    }
-//
-//                    mCurrResponse = new String(responseBody);
                     onDataLoadSuccess(new String(responseBody));
                 } else {
                     Toast.makeText(getActivity(),
@@ -312,8 +327,22 @@ public class BaseFragment extends Fragment {
         mList.clear();
         mList.addAll(parseDoc(responseBody));
         musicContentLiteAdapter.notifyItemChanged(0);
-        mCurrResponse = responseBody;
+//        Logger.d(convertListToJson(responseBody).toJSONString());
+        mCacheThread.queueCache(getPageUrl(), convertListToJson(responseBody).toJSONString());
     }
+
+
+    private com.alibaba.fastjson.JSONArray convertListToJson(String str) {
+        com.alibaba.fastjson.JSONArray jsonArray = new com.alibaba.fastjson.JSONArray();
+        List<MusicContentLite> data = parseDoc(str);
+        for (MusicContentLite musicContentLite : data) {
+            String json = JSON.toJSONString(musicContentLite);
+            jsonArray.add(json);
+        }
+        jsonArray.addAll(parseDoc(str));
+        return jsonArray;
+    }
+
 
     private void showRecyclerView() {
         if (ultimateRecyclerView == null) {
@@ -544,7 +573,7 @@ public class BaseFragment extends Fragment {
 
 
     private class WriteCacheTask extends AsyncTask<Void, Void, Void> {
-        private String mJson;
+        private String  mJson;
 
         public WriteCacheTask(String s) {
             mJson = s;
