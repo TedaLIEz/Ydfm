@@ -2,84 +2,59 @@ package com.hustascii.ydfm.fragment;
 
 
 import android.app.ActionBar;
-import android.app.ProgressDialog;
-import android.content.ClipData;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.avos.avoscloud.AVException;
-import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.AVQuery;
-import com.avos.avoscloud.FindCallback;
+import com.alibaba.fastjson.JSONArray;
 import com.hustascii.ydfm.R;
 import com.hustascii.ydfm.activity.PlayActivity;
-import com.hustascii.ydfm.adapter.HomeAdapter;
 import com.hustascii.ydfm.adapter.MusicContentLiteAdapter;
-import com.hustascii.ydfm.beans.MusicContent;
 import com.hustascii.ydfm.beans.MusicContentLite;
-import com.hustascii.ydfm.service.CacheThread;
+import com.hustascii.ydfm.service.DataThread;
 import com.hustascii.ydfm.util.FileUtils;
-import com.hustascii.ydfm.util.Globles;
 import com.hustascii.ydfm.util.NetWorkUtils;
-import com.hustascii.ydfm.view.RefreshLayout;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.marshalchen.ultimaterecyclerview.UltimateRecyclerView;
-import com.marshalchen.ultimaterecyclerview.animators.FlipInRightYAnimator;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.orhanobut.logger.Logger;
 
 import org.apache.http.Header;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 
 
-public class BaseFragment extends Fragment implements CacheThread.Callback {
+public class BaseFragment extends Fragment {
     protected final static String CACHE_FILE_NAME = "content_json";
     private List<MusicContentLite> mList;
     private UltimateRecyclerView ultimateRecyclerView;
     private String url;
     private int channel;
     private MusicContentLiteAdapter musicContentLiteAdapter;
-    private ImageLoader mImageLoader;
     private int page;
     protected String mTimeStamp;
-    protected String mCacheFileName;//jsons字串缓存文件名称
     private Toolbar toolbar;
     private ActionBar bar;
     protected LinearLayout mLoadFailedTipContainer;
@@ -89,32 +64,15 @@ public class BaseFragment extends Fragment implements CacheThread.Callback {
     protected SharedPreferences mPrefs;
     protected Resources mRes;
     protected boolean mIsFirstLoaded = true;    //true 则执行第一次加载时的操作，false则执行刷新时的操作
-    protected String mCacheJsonString;
     private State mCurrentState = State.STATE_INIT;
 
-    /**
-     * *
-     * 读取文件后台任务
-     */
-    private ReadCacheTask mReadCacheTask;
-    private WriteCacheTask mWriteCacheTask;
-
-    private CacheThread mCacheThread;
+    private DataThread mDataThread;
     protected boolean mHasLoadedUI = false;//不管以何种方式得到数据，成功的加载UI标记，避免重复开启读缓存和网络请求的任务
-
     private int num_page = 20;
 
-    @Override
-    public void onReadSuccess() {
 
-    }
 
-    @Override
-    public void onCacheSuccess(String name) {
-        Logger.d("cache in file " + name);
-    }
 
-    //    private Snackbar snackbar;
 
     enum State {
         STATE_INIT, STATE_OK, STATE_REFRESH_FAILED
@@ -131,8 +89,37 @@ public class BaseFragment extends Fragment implements CacheThread.Callback {
         page = 1;
         mList = new ArrayList<>();
         musicContentLiteAdapter = new MusicContentLiteAdapter(mList);
-        mCacheFileName = CACHE_FILE_NAME;
 
+        mDataThread = new DataThread<List<MusicContentLite>>(new Handler()) {
+
+            @Override
+            public void onReadSuccess(List<MusicContentLite> datas) {
+                Logger.d("success read cache\n" + datas.toString());
+                loadView(datas);
+            }
+
+            @Override
+            public void onCacheSuccess() {
+                mPrefs.edit().putBoolean("cached", true).apply();
+            }
+
+            @Override
+            public void cacheData(List<MusicContentLite> data) {
+                String str = JSON.toJSONString(data);
+                FileUtils.writeStringToFileCache(getActivity(), FileUtils.replaceSlash(getPageUrl()), str);
+            }
+
+            @Override
+            public List<MusicContentLite> readData(String tag) {
+                String str = FileUtils.readStringFromFileCache(getActivity(), tag);
+                List<MusicContentLite> datas = JSONArray.parseArray(str, MusicContentLite.class);
+                return datas;
+            }
+
+
+        };
+        mDataThread.start();
+        mDataThread.prepareHandler();
     }
 
 
@@ -151,7 +138,6 @@ public class BaseFragment extends Fragment implements CacheThread.Callback {
         //TODO: set toolbar's color to white
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         ultimateRecyclerView = (UltimateRecyclerView) view.findViewById(R.id.urv_infolist);
-        mImageLoader = ImageLoader.getInstance();
         initRecyclerView();
         mTryAgainBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,6 +146,7 @@ public class BaseFragment extends Fragment implements CacheThread.Callback {
                 getData();
             }
         });
+
         return view;
     }
 
@@ -194,17 +181,15 @@ public class BaseFragment extends Fragment implements CacheThread.Callback {
             }
 
         });
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
 
     }
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mCacheThread = new CacheThread(getActivity(), new Handler(), this);
-        mCacheThread.start();
-        mCacheThread.prepareHandler();
-        getData();
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        mPrefs.edit().putBoolean("cached", false).apply();
+        initData();
     }
 
     private void showByState(State state) {
@@ -247,7 +232,7 @@ public class BaseFragment extends Fragment implements CacheThread.Callback {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mCacheThread.quit();
+        mDataThread.quit();
     }
 
     public String getUrl() {
@@ -270,17 +255,53 @@ public class BaseFragment extends Fragment implements CacheThread.Callback {
     @Override
     public void onResume() {
         super.onResume();
+
         if (mCurrentState == State.STATE_REFRESH_FAILED && NetWorkUtils.isNetworkConnected(getActivity())) {
-            getData();
+            initData();
         }
     }
 
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        mIsFirstLoaded = true;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mIsFirstLoaded = false;
+    }
+
+    //TODO:change boolean when cache has
+    private void initData() {
+        boolean cached = mPrefs.getBoolean("cached", false);
+        Log.e("cached", cached + "");
+        if (!cached) {
+            if (NetWorkUtils.checkNetworkStatus(getActivity()) >= 0) {
+                getData();
+            } else {
+                Toast.makeText(getActivity(), "网络连接错误", Toast.LENGTH_SHORT).show();
+                showByState(State.STATE_REFRESH_FAILED);
+            }
+        } else {
+            String path = FileUtils.replaceSlash(getPageUrl());
+            mDataThread.readCache(path);
+            if (NetWorkUtils.checkNetworkStatus(getActivity()) >= 0) {
+                getData();
+            } else {
+                Toast.makeText(getActivity(), "网络连接错误", Toast.LENGTH_SHORT).show();
+
+            }
+        }
+
+    }
     /**
      * Get data in page 1
      *
      **/
-    public void getData() {
+    private void getData() {
 
         AsyncHttpClient client = new AsyncHttpClient();
         page = 1;
@@ -327,20 +348,7 @@ public class BaseFragment extends Fragment implements CacheThread.Callback {
         mList.clear();
         mList.addAll(parseDoc(responseBody));
         musicContentLiteAdapter.notifyItemChanged(0);
-//        Logger.d(convertListToJson(responseBody).toJSONString());
-        mCacheThread.queueCache(getPageUrl(), convertListToJson(responseBody).toJSONString());
-    }
-
-
-    private com.alibaba.fastjson.JSONArray convertListToJson(String str) {
-        com.alibaba.fastjson.JSONArray jsonArray = new com.alibaba.fastjson.JSONArray();
-        List<MusicContentLite> data = parseDoc(str);
-        for (MusicContentLite musicContentLite : data) {
-            String json = JSON.toJSONString(musicContentLite);
-            jsonArray.add(json);
-        }
-        jsonArray.addAll(parseDoc(str));
-        return jsonArray;
+        mDataThread.queueCache(FileUtils.replaceSlash(getPageUrl()), parseDoc(responseBody));
     }
 
 
@@ -386,20 +394,10 @@ public class BaseFragment extends Fragment implements CacheThread.Callback {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-//                if (mIsFirstLoaded) {
-//                    mHasLoadedUI = false;
-//                }
                 Toast.makeText(getActivity(),
                         "网络访问异常，错误码：" + statusCode, Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    //TODO: Overhead
-    private void onRefreshLoadFailed() {
-        ultimateRecyclerView.setVisibility(View.GONE);
-        mLoadFailedTipContainer.setVisibility(View.VISIBLE);
-        Toast.makeText(getActivity(), mRes.getString(R.string.refresh_failed), Toast.LENGTH_SHORT).show();
     }
 
     private void showError() {
@@ -431,106 +429,27 @@ public class BaseFragment extends Fragment implements CacheThread.Callback {
     }
 
 
-    private class ReadCacheTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            //读取缓存文件，显示正在加载...
-            onStartLoading();
-        }
 
-        @Override
-        protected Void doInBackground(Void... params) {
-            mCacheJsonString = onLoadResponseStringFromFileCache();//先从文件缓存中拿字串
-            mIsFirstLoaded = TextUtils.isEmpty(mCacheJsonString);
-            //构建时间戳
-            mTimeStamp = getTimeStampFromJson(mCacheJsonString);//取本地时间戳
-            if (TextUtils.isEmpty(mTimeStamp)) {
-                mTimeStamp = "0";
-            }
-//            mApiParams = mApiParams.with("timeStamp", mTimeStamp);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            if (ultimateRecyclerView == null)
-                return;
-            //拿到Json，开始走UI层操作
-            if (!NetWorkUtils.isNetworkConnected(getActivity())) {//未联网时先读取文件缓存,如果缓存中没有数据，则提示联网
-                Toast.makeText(getActivity(), mRes.getString(R.string.no_network_connected_toast), Toast.LENGTH_SHORT).show();
-                if (!mIsFirstLoaded) {
-                    //文件缓存中有数据，则直接从缓存中取数据
-                    onLoadViewFromCache(mCacheJsonString);//断网情况下，从本地缓存中只加载一次View
-                    mHasLoadedUI = true;
-                } else {
-                    onNetWorkUnConnectedWithNoFileCache();//文件缓存中没有数据，则提示网络出错
-                }
-            } else {
-                if (!mIsFirstLoaded) {//有缓存，直接从缓存中加载View
-                    onLoadViewFromCache(mCacheJsonString);
-                    mHasLoadedUI = true;
-                }
-                getData();//不管有没有缓存，均开启网络请求
-            }
-        }
-    }
-
-    private void loadView(String s) {
-        if (TextUtils.isEmpty(s)) {
-            return;
-        }
+    private void loadView(List<MusicContentLite> datas) {
+        if (datas == null) return;
 
         mLoadFailedTipContainer.setVisibility(View.GONE);
         ultimateRecyclerView.setVisibility(View.VISIBLE);
         //构建数据，刷新listview
         try {
-            mList = generateContentData(s);
-            updateRecommendedThemeUi(0);
+            mList.clear();
+            mList.addAll(datas);
+            Logger.d("list" + mList.toString());
+//            updateRecommendedThemeUi(0);
+            musicContentLiteAdapter.notifyDataSetChanged();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
 
-    void updateRecommendedThemeUi(int command) {
-        /**
-         * 参数command
-         * 0：初次加载
-         * 1：刷新
-         * 2：加载更多
-         */
-        if (mList == null || mList.size() == 0) {
-            return;
-        }
-        if (musicContentLiteAdapter != null) {
-//            pd.dismiss();
-
-            switch (command) {
-                case 0:
-                case 1:
-                    mList.clear();
-                    int length = mList.size();
-                    for (int i = 0; i < length; i++) {
-                        mList.add(mList.get(i));
-                    }
-                    break;
-                case 2:
-                    break;
-                default:
-            }
-            musicContentLiteAdapter.notifyDataSetChanged();
-        }
-    }
 
 
-    protected List<MusicContentLite> generateContentData(String s) throws JSONException {
-//        LinkedList<MusicContentLite> data = new LinkedList<MusicContentLite>();
-
-//        JSONObject obj = new JSONObject(s);
-//        JSONArray array = obj.getJSONArray("data");
-        List<MusicContentLite> list = JSON.parseArray(s, MusicContentLite.class);
-        return list;
-    }
 
 
     private void onNetWorkUnConnectedWithNoFileCache() {
@@ -544,68 +463,33 @@ public class BaseFragment extends Fragment implements CacheThread.Callback {
     }
 
 
-    protected void onLoadViewFromCache(String s) {
-        loadView(s);
-    }
 
 
-    private String getTimeStampFromJson(String json) {
-        if (!TextUtils.isEmpty(json)) {
-            try {
-                JSONObject jsonObject = new JSONObject(json);
-                String timeStamp = jsonObject.optString("timeStamp");
-                //new interface add timeStamp in data body while odd interface
-                //put it outside
-                if (TextUtils.isEmpty(timeStamp)) {
-                    JSONObject jsonObject1 = jsonObject.optJSONObject("data");
-                    if (jsonObject1 != null) {
-
-                        timeStamp = jsonObject1.optString("timeStamp");
-                    }
-                }
-                return timeStamp;
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
-
-    private class WriteCacheTask extends AsyncTask<Void, Void, Void> {
-        private String  mJson;
-
-        public WriteCacheTask(String s) {
-            mJson = s;
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            onRestoreFileCache(mJson);//网络请求成功，则将json数据更新到硬盘
-            return null;
-        }
-    }
+//    private String getTimeStampFromJson(String json) {
+//        if (!TextUtils.isEmpty(json)) {
+//            try {
+//                JSONObject jsonObject = new JSONObject(json);
+//                String timeStamp = jsonObject.optString("timeStamp");
+//                //new interface add timeStamp in data body while odd interface
+//                //put it outside
+//                if (TextUtils.isEmpty(timeStamp)) {
+//                    JSONObject jsonObject1 = jsonObject.optJSONObject("data");
+//                    if (jsonObject1 != null) {
+//
+//                        timeStamp = jsonObject1.optString("timeStamp");
+//                    }
+//                }
+//                return timeStamp;
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        return null;
+//    }
 
 
-    protected void onRestoreFileCache(String s) {
-        FileUtils.writeStringToFileCache(getActivity(), mCacheFileName, s);
-    }
 
 
-    protected String onLoadResponseStringFromFileCache() {
-        String s = FileUtils.readStringFromFileCache(getActivity(), mCacheFileName);
-        return s;
-    }
-
-    protected void onStartLoading() {//第一次加载时的回调
-        if (ultimateRecyclerView == null)
-            return;
-        ultimateRecyclerView.setVisibility(View.GONE);
-        mLoadFailedTipContainer.setVisibility(View.VISIBLE);
-        mTv.setText(mRes.getString(R.string.network_loading));//正在加载的页面显示
-        mLoadingFlgImg.setImageResource(R.drawable.ic_logo);
-        mTryAgainBtn.setVisibility(View.GONE);
-    }
 //
 //
 //    private void getDataFromLean(){

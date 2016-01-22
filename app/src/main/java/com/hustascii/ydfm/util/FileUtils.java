@@ -6,6 +6,7 @@ import android.os.Environment;
 import android.text.TextUtils;
 
 import com.hustascii.ydfm.MyApp;
+import com.orhanobut.logger.Logger;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -396,4 +397,7 @@ public class FileUtils {
         }
     }
 
+    public static String replaceSlash(String path) {
+        return path.replace("/","_");
+    }
 }
