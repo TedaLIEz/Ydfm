@@ -3,11 +3,10 @@ package com.hustascii.ydfm.fragment;
 
 import android.app.ActionBar;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
-import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -47,7 +46,6 @@ import java.util.List;
 
 
 public class BaseFragment extends Fragment {
-    protected final static String CACHE_FILE_NAME = "content_json";
     private List<MusicContentLite> mList;
     private UltimateRecyclerView ultimateRecyclerView;
     private String url;
@@ -61,13 +59,10 @@ public class BaseFragment extends Fragment {
     protected TextView mTv;
     protected ImageView mLoadingFlgImg;
     protected Button mTryAgainBtn;
-    protected SharedPreferences mPrefs;
     protected Resources mRes;
-    protected boolean mIsFirstLoaded = true;    //true 则执行第一次加载时的操作，false则执行刷新时的操作
     private State mCurrentState = State.STATE_INIT;
 
-    private DataThread mDataThread;
-    protected boolean mHasLoadedUI = false;//不管以何种方式得到数据，成功的加载UI标记，避免重复开启读缓存和网络请求的任务
+    private DataThread<List<MusicContentLite>> mDataThread;
     private int num_page = 20;
 
 
@@ -100,7 +95,7 @@ public class BaseFragment extends Fragment {
 
             @Override
             public void onCacheSuccess() {
-                mPrefs.edit().putBoolean("cached", true).apply();
+//                mPrefs.edit().putBoolean("cached", true).commit();
             }
 
             @Override
@@ -135,7 +130,6 @@ public class BaseFragment extends Fragment {
         mTv = (TextView) view.findViewById(R.id.tv_tip);
         mLoadingFlgImg = (ImageView) view.findViewById(R.id.img_load_flg);
         mTryAgainBtn = (Button) view.findViewById(R.id.btn_retry);
-        //TODO: set toolbar's color to white
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
         ultimateRecyclerView = (UltimateRecyclerView) view.findViewById(R.id.urv_infolist);
         initRecyclerView();
@@ -148,6 +142,14 @@ public class BaseFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+//        mPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+//        mPrefs.edit().putBoolean("cached", false).apply();
+        initData();
     }
 
     private void initRecyclerView() {
@@ -177,6 +179,7 @@ public class BaseFragment extends Fragment {
         ultimateRecyclerView.setOnLoadMoreListener(new UltimateRecyclerView.OnLoadMoreListener() {
             @Override
             public void loadMore(int itemsCount, int maxLastVisiblePosition) {
+                //TODO:Append to cache when loadMore
                 loadMoreData();
             }
 
@@ -184,13 +187,7 @@ public class BaseFragment extends Fragment {
 
 
     }
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        mPrefs.edit().putBoolean("cached", false).apply();
-        initData();
-    }
+
 
     private void showByState(State state) {
         mCurrentState = state;
@@ -255,7 +252,6 @@ public class BaseFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
         if (mCurrentState == State.STATE_REFRESH_FAILED && NetWorkUtils.isNetworkConnected(getActivity())) {
             initData();
         }
@@ -265,20 +261,23 @@ public class BaseFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        mIsFirstLoaded = true;
+        Log.i("lifecycle", "onStop");
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mIsFirstLoaded = false;
+        Log.i("lifecycle", "onPause");
+        if (mCurrentState == State.STATE_REFRESH_FAILED && NetWorkUtils.isNetworkConnected(getActivity())) {
+            initData();
+        }
     }
 
-    //TODO:change boolean when cache has
+
     private void initData() {
-        boolean cached = mPrefs.getBoolean("cached", false);
-        Log.e("cached", cached + "");
-        if (!cached) {
+        String filePath = FileUtils.replaceSlash(getPageUrl());
+        boolean exist = FileUtils.isCacheExists(getActivity(), filePath);
+        if (!exist) {
             if (NetWorkUtils.checkNetworkStatus(getActivity()) >= 0) {
                 getData();
             } else {
@@ -286,8 +285,7 @@ public class BaseFragment extends Fragment {
                 showByState(State.STATE_REFRESH_FAILED);
             }
         } else {
-            String path = FileUtils.replaceSlash(getPageUrl());
-            mDataThread.readCache(path);
+            mDataThread.readCache(filePath);
             if (NetWorkUtils.checkNetworkStatus(getActivity()) >= 0) {
                 getData();
             } else {
@@ -410,7 +408,7 @@ public class BaseFragment extends Fragment {
         mTryAgainBtn.setVisibility(View.VISIBLE);
     }
 
-    public ArrayList<MusicContentLite> parseDoc(String doc) {
+    public ArrayList<MusicContentLite> parseDoc(@NonNull String doc) {
         ArrayList<MusicContentLite> list = new ArrayList<>();
         Document document = Jsoup.parse(doc);
         Elements authors = document.select("div.channel-meta").select("span:has(i.fa-pencil)");
@@ -439,28 +437,12 @@ public class BaseFragment extends Fragment {
         try {
             mList.clear();
             mList.addAll(datas);
-            Logger.d("list" + mList.toString());
-//            updateRecommendedThemeUi(0);
             musicContentLiteAdapter.notifyDataSetChanged();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
-
-
-
-
-    private void onNetWorkUnConnectedWithNoFileCache() {
-        if (ultimateRecyclerView == null)
-            return;
-        ultimateRecyclerView.setVisibility(View.GONE);
-        mLoadFailedTipContainer.setVisibility(View.VISIBLE);
-        mTv.setText(mRes.getString(R.string.load_failed));
-        mLoadingFlgImg.setImageResource(R.drawable.online_load_failed);
-        mTryAgainBtn.setVisibility(View.VISIBLE);
-    }
 
 
 

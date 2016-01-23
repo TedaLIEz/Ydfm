@@ -1,13 +1,11 @@
 package com.hustascii.ydfm.service;
 
-import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.util.Log;
 import android.util.LruCache;
 
-import com.orhanobut.logger.Logger;
 
 import java.util.List;
 
@@ -23,7 +21,7 @@ public abstract class DataThread<T extends List> extends HandlerThread {
     private JSONLruCache mCache;
     private Handler mWorkerHandler;
     private Handler mResponseHandler;
-
+    private boolean mReady;
 
     public abstract void onReadSuccess(T data);
     public abstract void onCacheSuccess();
@@ -41,9 +39,10 @@ public abstract class DataThread<T extends List> extends HandlerThread {
      * Cache data
      * @param tag the data tag
      * @param data the data
+     * @throws IllegalArgumentException if you call this method before {@link #prepareHandler()}
      */
     public void queueCache(String tag, T data) {
-        if (mWorkerHandler == null) {
+        if (!mReady) {
             throw new IllegalArgumentException("You should call prepareHandler first!");
         }
         mCache.put(tag, data);
@@ -54,9 +53,10 @@ public abstract class DataThread<T extends List> extends HandlerThread {
     /**
      * Read the cache
      * @param tag data tag
+     * @throws IllegalArgumentException if you call this method before {@link #prepareHandler()}
      */
     public void readCache(String tag) {
-        if (mWorkerHandler == null) {
+        if (!mReady) {
             throw new IllegalArgumentException("You should call prepareHandler first!");
         }
         mWorkerHandler.obtainMessage(READ, tag).sendToTarget();
@@ -66,6 +66,7 @@ public abstract class DataThread<T extends List> extends HandlerThread {
      * Prepare Handler to work
      */
     public void prepareHandler() {
+
         mWorkerHandler = new Handler(getLooper(), new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
@@ -86,6 +87,7 @@ public abstract class DataThread<T extends List> extends HandlerThread {
                 return true;
             }
         });
+        mReady = true;
     }
 
     private void read(final String data) {
@@ -95,6 +97,10 @@ public abstract class DataThread<T extends List> extends HandlerThread {
                 onReadSuccess(readData(data));
             }
         });
+    }
+
+    public boolean ismReady() {
+        return mReady;
     }
 
     private void cache(final T tag) {
@@ -130,6 +136,7 @@ public abstract class DataThread<T extends List> extends HandlerThread {
     @Override
     public boolean quit() {
         Log.i(TAG, "thread quit");
+        mReady = false;
         return super.quit();
 
     }

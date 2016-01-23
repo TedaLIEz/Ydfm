@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.hustascii.ydfm.MyApp;
 import com.orhanobut.logger.Logger;
@@ -68,6 +69,12 @@ public class FileUtils {
         return file.getAbsolutePath() + "/";
     }
 
+
+    public static boolean isCacheExists(Context context, String fileName) {
+        return fileIsExists(getCacheFolder(context) + "/" + fileName);
+    }
+
+
     public static final String getImageCacheFile(Context context) {
         return StringUtils.getString(Environment.getExternalStorageDirectory(), "/", context.getPackageName(),
                 "/cacheImage/");
@@ -81,6 +88,7 @@ public class FileUtils {
         try {
             fileOutputStream = context.openFileOutput(fileName, Context.MODE_PRIVATE);
             fileOutputStream.write(content.getBytes());
+            Log.e("cache", "file write to " + getCacheFolder(context) + "/" + fileName);
             fileOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -259,8 +267,7 @@ public class FileUtils {
     }
 
     public static final String getCacheFolder(Context context) {
-        return StringUtils.getString(Environment.getExternalStorageDirectory(), "/", context.getPackageName(),
-                "/");
+        return context.getFilesDir().getPath();
     }
 
 
