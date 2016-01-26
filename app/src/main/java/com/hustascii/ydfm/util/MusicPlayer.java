@@ -115,7 +115,7 @@ public class MusicPlayer implements OnBufferingUpdateListener, OnCompletionListe
                 try {
                     mediaPlayer.reset();
                     mediaPlayer.setDataSource(url); // 设置数据源
-                    mediaPlayer.prepare(); // prepare自动播放
+                    mediaPlayer.prepareAsync(); // prepare自动播放
                 } catch (IllegalArgumentException e) {
                     e.printStackTrace();
                 } catch (SecurityException e) {

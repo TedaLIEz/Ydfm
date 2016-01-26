@@ -61,7 +61,7 @@
         </activity>
 
 
-        <meta-data android:value="565a36e5e0f55a76f5003800" android:name="UMENG_APPKEY"/>
+        <meta-data android:value="56a726b467e58e7eb30020ce" android:name="UMENG_APPKEY"/>
         <meta-data android:value="Channel ID" android:name="UMENG_CHANNEL"/>
     </application>
 

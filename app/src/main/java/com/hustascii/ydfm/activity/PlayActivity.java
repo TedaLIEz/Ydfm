@@ -35,6 +35,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.orhanobut.logger.Logger;
+import com.umeng.analytics.MobclickAgent;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 import org.apache.http.Header;
@@ -79,7 +80,7 @@ public class PlayActivity extends MySwipeBackActivity {
         statusBar = (TextView) findViewById(R.id.statusBar);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Play");
-        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_36dp);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -123,6 +124,7 @@ public class PlayActivity extends MySwipeBackActivity {
                     } else {
                         //player.setUrl(musicUrl);
                         player.play();
+                        MobclickAgent.onEvent(PlayActivity.this, "_played");
                     }
                 } else {
                     if (musicUrl.equals(player.getUrl())) {
@@ -266,14 +268,26 @@ public class PlayActivity extends MySwipeBackActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_play, menu);
         if(isLike){
-            Drawable drawable=getResources().getDrawable(R.drawable.ic_heart_press_fm);
+            Drawable drawable=getResources().getDrawable(R.drawable.ic_favorite_white_36dp);
             drawable.setAlpha(100);
             menu.findItem(R.id.action_love).setIcon(drawable);
 
         }else{
-            menu.findItem(R.id.action_love).setIcon(R.drawable.ic_heart_normal_fm);
+            menu.findItem(R.id.action_love).setIcon(R.drawable.ic_favorite_white_36dp);
         }
         return true;
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        MobclickAgent.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 
     @Override
@@ -287,10 +301,10 @@ public class PlayActivity extends MySwipeBackActivity {
             case R.id.action_love:
                 if(isLike){
                     isLike=false;
-                    item.setIcon(R.drawable.ic_heart_normal_fm);
+                    item.setIcon(R.drawable.ic_favorite_white_36dp);
                 }else{
                     isLike=true;
-                    Drawable drawable=getResources().getDrawable(R.drawable.ic_heart_press_fm);
+                    Drawable drawable=getResources().getDrawable(R.drawable.ic_favorite_white_36dp);
                     drawable.setAlpha(100);
                     item.setIcon(drawable);
                 }

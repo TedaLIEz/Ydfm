@@ -24,6 +24,7 @@ import com.hustascii.ydfm.fragment.SearchResultFragment;
 import com.hustascii.ydfm.fragment.SettingFragment;
 import com.hustascii.ydfm.util.FontHelper;
 import com.hustascii.ydfm.util.Globles;
+import com.umeng.analytics.MobclickAgent;
 import com.umeng.update.UmengUpdateAgent;
 
 import java.lang.reflect.Field;
@@ -49,8 +50,8 @@ public class MainActivity extends MaterialNavigationDrawer {
     public void init(Bundle savedInstanceState) {
 
         AVAnalytics.trackAppOpened(getIntent());
-        UmengUpdateAgent.setUpdateOnlyWifi(false);
-        UmengUpdateAgent.update(this);
+//        UmengUpdateAgent.setUpdateOnlyWifi(false);
+//        UmengUpdateAgent.update(this);
 
         View view = LayoutInflater.from(this).inflate(R.layout.custom_drawer,null);
         setDrawerHeaderCustom(view);
@@ -132,6 +133,7 @@ public class MainActivity extends MaterialNavigationDrawer {
     @Override
     protected void onResume() {
         super.onResume();
+        MobclickAgent.onResume(this);
         new BaseFragment();
     }
 
@@ -149,10 +151,17 @@ public class MainActivity extends MaterialNavigationDrawer {
                 fragmentTransaction.commit();
                 break;
             default:
+                break;
         }
 
     }
-    
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
 
     private BaseFragment getFragmentInstance(String url){
         if(fragmentManager.findFragmentByTag(url)==null){
@@ -205,6 +214,7 @@ public class MainActivity extends MaterialNavigationDrawer {
 
         } else {
             finish();
+            MobclickAgent.onKillProcess(this);
             System.exit(0);
         }
     }
